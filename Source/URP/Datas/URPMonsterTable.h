@@ -40,11 +40,11 @@ public:
 
 struct FURPMonsterTable : public FURPGameDataTableBase
 {
-    TArray<FURPMonsterTable> Rows;
+    TArray<FURPMonsterRow> Rows;
 
     virtual bool LoadFromJSON(const FString& FilePath) override
     {
-        /*FString FullPath = FPaths::ProjectContentDir() + FilePath;
+        FString FullPath = FPaths::ProjectContentDir() + FilePath;
         FString FileData;
         if (!FFileHelper::LoadFileToString(FileData, *FullPath))
         {
@@ -58,7 +58,7 @@ struct FURPMonsterTable : public FURPGameDataTableBase
             return false;
         }
 
-        return true;*/
+        return true;
     }
 
     virtual void PrintSummary() const override

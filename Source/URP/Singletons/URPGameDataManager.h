@@ -4,36 +4,56 @@
 
 #include "CoreMinimal.h"
 #include "../Datas/URPGameDataTableBase.h"
+#include "GameFramework/PlayerController.h"
+#include "URPGameDataManager.generated.h"
 /**
  * 
  */
-class URP_API URPGameDataManager
+USTRUCT()
+struct FGameDataPacket
 {
+    GENERATED_BODY()
+
+    UPROPERTY()
+    FString DataName;
+
+    UPROPERTY()
+    FString JsonString;
+};
+
+UCLASS()
+class URP_API UURPGameDataManager : public UObject
+{
+    GENERATED_BODY()
+
 public:
-    /** 싱글톤 접근 */
-    static URPGameDataManager& Get();
+    static UURPGameDataManager* Get(UWorld* World);
 
-    void Initialize();
+    void Initialize(UWorld* World);
 
-    /** 테이블 등록 */
-    void RegisterTable(FName TableName, TSharedPtr<FURPGameDataTableBase> Table);
+    /** 서버: /Content/Data 내 JSON 로드 */
+    void LoadAllFromServerDisk();
 
-    /** 테이블 가져오기 */
-    FURPGameDataTableBase* GetRaw(FName TableName) const;
+    /** 클라이언트: 캐시 데이터 로드 */
+    void LoadLocalCache();
 
-    template<typename T>
-    T* GetTable(FName TableName) const
-    {
-        return static_cast<T*>(GetRaw(TableName));
-    }
+    /** 클라이언트: 캐시 저장 */
+    void SaveLocalCache();
 
-    /** 모든 데이터 제거 */
-    void Clear();
+    /** 클라이언트/서버 공용: 데이터 적용 */
+    void ApplyData(const FString& DataName, const FString& JsonString);
+
+    /** 서버: 모든 JSON → 패킷 배열로 변환 */
+    void GetAllDataPackets(TArray<FGameDataPacket>& OutPackets) const;
+
+    /** 특정 데이터 반환 */
+    FString GetDataAsString(FString DataName) const;
+
+    /** 디버그용: 현재 로드된 데이터 로그 출력 */
+    void PrintSummary() const;
 
 private:
-    URPGameDataManager() = default;
-    ~URPGameDataManager() = default;
-
-private:
-    TMap<FName, TSharedPtr<FURPGameDataTableBase>> Tables;
+    /** 현재 로드된 JSON 데이터 */
+    UPROPERTY()
+    TMap<FString, FString> CachedJson; // DataName → JsonString
 };
