@@ -8,13 +8,22 @@ void UURPGameInstance::Init()
 {
     Super::Init();
 
+    // Listen 서버용 NetworkManager 스폰
     UWorld* World = GetWorld();
-    if (!World) return;
+    if (World)
+    {
+        FActorSpawnParameters Params;
+        Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        NetworkManager = World->SpawnActor<AURPNetworkManager>(AURPNetworkManager::StaticClass(), FTransform::Identity, Params);
+        UE_LOG(LogTemp, Log, TEXT("[GameInstance] URPNetworkManager initialized."));
+    }
 
-    FActorSpawnParameters Params;
-    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    // 로그인 레벨로 전환
+    const FString LoginLevel = TEXT("Login");
+    if (UGameplayStatics::GetCurrentLevelName(GetWorld()) != LoginLevel)
+    {
+        UGameplayStatics::OpenLevel(GetWorld(), FName(*LoginLevel));
+        UE_LOG(LogTemp, Log, TEXT("[GameInstance] Loading LoginLevel (ListenServer)."));
+    }
 
-    NetworkManager = World->SpawnActor<AURPNetworkManager>(AURPNetworkManager::StaticClass(), FTransform::Identity, Params);
-
-    UE_LOG(LogTemp, Log, TEXT("[GameInstance] URPNetworkManager initialized."));
 }
