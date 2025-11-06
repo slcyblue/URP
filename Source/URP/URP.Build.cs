@@ -7,8 +7,18 @@ public class URP : ModuleRules
 	public URP(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Json", "JsonUtilities" });
+
+        PublicIncludePaths.AddRange(new string[] {
+            "URP",
+            "URP/Data",
+            "URP/Network",
+            "URP/Server",
+            "URP/Server/Services",
+            "URP/Server/Storage",
+            "URP/Server/Core"
+        });
+
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Json", "JsonUtilities","UMG", "Slate", "SlateCore"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

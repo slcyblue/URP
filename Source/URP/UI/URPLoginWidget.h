@@ -19,6 +19,9 @@ class URP_API UURPLoginWidget : public UUserWidget
     UFUNCTION()
     void OnLoginClicked();
 
+    UFUNCTION()
+    void OnLoginResponseReceived(const FLoginResponse& Response);
+
     UPROPERTY(meta = (BindWidget))
     class UEditableTextBox* IDTextBox;
 
