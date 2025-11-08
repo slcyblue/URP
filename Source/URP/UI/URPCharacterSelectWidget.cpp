@@ -3,6 +3,7 @@
 #include "Data/URPPlayerData.h"
 #include "Core/Managers/URPUserDataManager.h"
 #include "Core/Subsystems/URPNetworkSubsystem.h"
+#include "Core/Subsystems/URPLevelTransitionSubsystem.h"
 #include "Network/PlayerDataRPCHandler.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
@@ -10,6 +11,13 @@
 void UURPCharacterSelectWidget::NativeConstruct()
 {
     Super::NativeConstruct();
+
+    // RPC 델리게이트 연결
+    if (auto* Net = GetGameInstance()->GetSubsystem<UURPNetworkSubsystem>())
+        if (auto* PlayerHandler = Net->GetHandler<UPlayerDataRPCHandler>())
+        {
+            PlayerHandler->OnPlayerDataResponse.AddDynamic(this, &UURPCharacterSelectWidget::OnPlayerDataCreated);
+        }
 
     // 각 버튼 초기화
     if (BarbarianButton)
@@ -66,9 +74,14 @@ void UURPCharacterSelectWidget::OnConfirmClass()
     FString LoginId;
     if (auto* UserDataMgr = UURPUserDataManager::Get())
     {
-        LoginId = UserDataMgr->GetPlayerData().PlayerId;
-    }
+        LoginId = UserDataMgr->GetCurrentPlayerId();
 
+        if (LoginId.IsEmpty())
+        {
+            LoginId = UserDataMgr->GetPlayerData().PlayerId;
+        }
+    }
+       
     if (LoginId.IsEmpty())
     {
         UE_LOG(LogTemp, Error, TEXT("[CharacterSelect] Missing LoginId."));
@@ -81,4 +94,21 @@ void UURPCharacterSelectWidget::OnConfirmClass()
             UE_LOG(LogTemp, Log, TEXT("[CharacterSelect] Init PlayerData for %s (Class=%d)"), *LoginId, (uint8)SelectedClass);
             PlayerHandler->Server_CreatePlayer(LoginId, SelectedClass);   // 신규 생성 전용 RPC
         }
+}
+
+
+void UURPCharacterSelectWidget::OnPlayerDataCreated(const FPlayerDataResponse& Response)
+{
+    if (!Response.bSuccess)
+    {
+        UE_LOG(LogTemp, Error, TEXT("[CharacterSelect] PlayerData creation failed: %s"), *Response.Message);
+        return;
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("[CharacterSelect] PlayerData created successfully for %s"), *Response.PlayerData.PlayerId);
+
+    if (auto* LevelSys = GetGameInstance()->GetSubsystem<UURPLevelTransitionSubsystem>())
+    {
+        LevelSys->AsyncTransitionToLevel(TEXT("Village"), EURPScreenType::VillageHUD);
+    }
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "Data/URPCommonEnums.h"
 #include "URPLoginData.generated.h"
 
 USTRUCT(BlueprintType)
@@ -29,5 +30,17 @@ struct URP_API FLoginResponse
     FString PlayerId;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    bool bIsNewAccount = false;
+    EURPClassType SelectedClass;
+};
+
+USTRUCT(BlueprintType)
+struct URP_API FAccountData
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString AccountId;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString Password;
 };

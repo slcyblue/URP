@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Data/URPCommonEnums.h"
+#include "Data/URPPlayerData.h"
 #include <Components/Button.h>
 #include "URPCharacterSelectWidget.generated.h"
 
@@ -21,6 +22,9 @@ public:
 
     UFUNCTION()
     void OnConfirmClass();
+
+    UFUNCTION()
+    void OnPlayerDataCreated(const FPlayerDataResponse& Response);
 
 protected:
     UPROPERTY(meta = (BindWidget))

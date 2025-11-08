@@ -34,6 +34,9 @@ public:
     UFUNCTION(BlueprintPure)
     UUserWidget* GetCurrentScreen() const { return CurrentScreen; }
 
+    UFUNCTION(BlueprintCallable)
+    void UpdateLoadingProgress(float Progress);
+
 protected:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -44,6 +47,9 @@ private:
     /** 등록된 UI 클래스 */
     UPROPERTY()
     TMap<EURPScreenType, TSubclassOf<UUserWidget>> ScreenMap;
+
+    UPROPERTY()
+    UUserWidget* CurrentWidget;
 
     /** 자동 로드용 경로 매핑 */
     void LoadScreenPaths();

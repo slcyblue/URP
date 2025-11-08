@@ -7,7 +7,7 @@
 
 
 /** 유저 데이터 응답 이벤트 */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerDataResponse, const FPlayerDataResponse&, PlayerData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerDataCreated, const FPlayerDataResponse&, PlayerData);
 
 UCLASS()
 class URP_API UPlayerDataRPCHandler : public UBaseRPCHandler
@@ -28,5 +28,5 @@ public:
 
     /** 플레이어 데이터 응답 델리게이트 */
     UPROPERTY(BlueprintAssignable)
-    FOnPlayerDataResponse OnPlayerDataResponse;
+    FOnPlayerDataCreated OnPlayerDataResponse;
 };

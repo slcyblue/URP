@@ -2,6 +2,8 @@
 #include "Server/Storage/URPJsonStorage.h"
 #include "Misc/FileHelper.h"
 #include "Serialization/JsonSerializer.h"
+#include "Data/URPPlayerData.h"
+#include <URPServerDataService.h>
 
 UURPAccountService::UURPAccountService()
 {
@@ -42,26 +44,27 @@ bool UURPAccountService::OnLogin(const void* Payload, void* OutResponse)
  */
 bool UURPAccountService::CreateAccount(const FLoginRequest& Req, FLoginResponse& Out)
 {
-    FString PathCategory = TEXT("Accounts");
+    // 1. 계정 저장
+    FAccountData Account;
+    Account.AccountId = Req.ID;
+    Account.Password = Req.Password;
+    Storage->SaveStruct(TEXT("Accounts"), Req.ID, &Account, FAccountData::StaticStruct());
 
-    // 중복 방지
-    if (Storage->Exists(PathCategory, Req.ID))
+    // 2. 기본 PlayerData 생성 (SelectedClass = None)
+    if (UURPServerDataService* ServerData = UURPServerDataService::Get())
     {
-        Out.bSuccess = false;
-        Out.Message = TEXT("Account already exists");
-        return false;
+        FPlayerDataRequest PlayerReq;
+        PlayerReq.PlayerId = Req.ID;
+
+        FPlayerDataResponse PlayerRes;
+        ServerData->RouteRequest(EURPServerRequestType::CreatePlayer, &PlayerReq, &PlayerRes);
     }
 
-    // 계정 데이터 저장
-    Out.PlayerId = Req.ID;
     Out.bSuccess = true;
-    Out.Message = TEXT("New account created successfully");
-    Out.bIsNewAccount = true;
-
-    const bool bSaved = Storage->SaveStruct(PathCategory, Req.ID, &Out, FLoginResponse::StaticStruct());
-    UE_LOG(LogTemp, Log, TEXT("[AccountService] Created account %s (%s)"), *Req.ID, bSaved ? TEXT("Saved") : TEXT("Save Failed"));
-
-    return bSaved;
+    Out.Message = TEXT("New account created");
+    Out.PlayerId = Req.ID;
+    Out.SelectedClass = EURPClassType::None;
+    return true;
 }
 
 /**
@@ -69,37 +72,23 @@ bool UURPAccountService::CreateAccount(const FLoginRequest& Req, FLoginResponse&
  */
 bool UURPAccountService::VerifyLogin(const FLoginRequest& Req, FLoginResponse& Out)
 {
-    FString PathCategory = TEXT("Accounts");
-
-    if (!Storage->Exists(PathCategory, Req.ID))
+    FAccountData Account;
+    if (!Storage->LoadStruct(TEXT("Accounts"), Req.ID, &Account, FAccountData::StaticStruct()))
     {
         Out.bSuccess = false;
-        Out.Message = TEXT("Account not found");
+        Out.Message = TEXT("Account load failed");
         return false;
     }
 
-    FLoginResponse Saved;
-    const bool bLoaded = Storage->LoadStruct(PathCategory, Req.ID, &Saved, FLoginResponse::StaticStruct());
-    if (!bLoaded)
+    if (Account.Password != Req.Password)
     {
         Out.bSuccess = false;
-        Out.Message = TEXT("Failed to load account data");
+        Out.Message = TEXT("Invalid password");
         return false;
     }
 
-    // 패스워드 검증 (패스워드를 별도 저장하지 않았으면 일단 통과)
-    if (Req.Password.IsEmpty() || Req.Password == Saved.Message)
-    {
-        Out = Saved;
-        Out.bSuccess = true;
-        Out.Message = TEXT("Login successful");
-        Out.bIsNewAccount = false;
-        UE_LOG(LogTemp, Log, TEXT("[AccountService] Login success: %s"), *Req.ID);
-        return true;
-    }
-
-    Out.bSuccess = false;
-    Out.Message = TEXT("Invalid password");
-    UE_LOG(LogTemp, Warning, TEXT("[AccountService] Invalid password for %s"), *Req.ID);
-    return false;
+    Out.bSuccess = true;
+    Out.PlayerId = Req.ID;
+    Out.Message = TEXT("Login successful");
+    return true;
 }

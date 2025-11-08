@@ -1,6 +1,7 @@
 #include "URPUISubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include <UI/URPLoadingWidget.h>
 
 void UURPUISubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -99,5 +100,13 @@ void UURPUISubsystem::ShowPopup(TSubclassOf<UUserWidget> PopupClass)
     {
         Popup->AddToViewport(1000);
         UE_LOG(LogTemp, Log, TEXT("[UIManager] Popup displayed."));
+    }
+}
+
+void UURPUISubsystem::UpdateLoadingProgress(float Progress)
+{
+    if (auto* Widget = Cast<UURPLoadingWidget>(CurrentWidget))
+    {
+        Widget->SetProgress(Progress);
     }
 }

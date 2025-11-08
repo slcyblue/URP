@@ -15,7 +15,7 @@ void UPlayerDataRPCHandler::Server_CreatePlayer_Implementation(const FString& Pl
     FPlayerDataRequest Req;
     Req.Action = TEXT("Init");
     Req.PlayerId = PlayerId;
-    Req.PlayerData.PlayerId = PlayerId;   // 안전하게 중복 세팅
+    Req.PlayerData.PlayerId = PlayerId;
     Req.PlayerData.SelectedClass = ClassType;
 
     FPlayerDataResponse Res;
@@ -54,15 +54,11 @@ void UPlayerDataRPCHandler::Client_ReceivePlayerData_Implementation(const FPlaye
     if (!Response.bSuccess)
         return;
 
-    // Load인 경우에만 UserData 반영 및 레벨 전환
     if (Response.Action == TEXT("Load"))
     {
         if (auto* UserDataManager = UURPUserDataManager::Get())
         {
             UserDataManager->SetUserData(Response.PlayerData);
         }
-
-        // 기존: 무조건 Village로 전환하던 것을 Load 성공일 때만
-        UGameplayStatics::OpenLevel(GetWorld(), TEXT("Village"));
     }
 }

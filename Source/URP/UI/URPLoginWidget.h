@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Data/URPPlayerData.h"
 #include "URPLoginWidget.generated.h"
 
 /**
@@ -21,6 +22,9 @@ class URP_API UURPLoginWidget : public UUserWidget
 
     UFUNCTION()
     void OnLoginResponseReceived(const FLoginResponse& Response);
+
+    UFUNCTION()
+    void OnPlayerDataLoaded(const FPlayerDataResponse& Response);
 
     UPROPERTY(meta = (BindWidget))
     class UEditableTextBox* IDTextBox;
