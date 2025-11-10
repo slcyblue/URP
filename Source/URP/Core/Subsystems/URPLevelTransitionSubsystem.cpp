@@ -11,40 +11,42 @@ void UURPLevelTransitionSubsystem::Initialize(FSubsystemCollectionBase& Collecti
 
 void UURPLevelTransitionSubsystem::AsyncTransitionToLevel(FName LevelPackageName, EURPScreenType NextHUD)
 {
-    PendingLevelPackage = LevelPackageName;
-    PendingHUD = NextHUD;
-    CurrentProgress = 0.f;
+    UGameplayStatics::OpenLevel(GetWorld(), LevelPackageName);
 
-    // 로딩 UI 표시
-    if (auto* UI = GetGameInstance()->GetSubsystem<UURPUISubsystem>())
-    {
-        UI->ShowScreen(EURPScreenType::Loading);
-        UI->UpdateLoadingProgress(0.f);
-    }
+    //PendingLevelPackage = LevelPackageName;
+    //PendingHUD = NextHUD;
+    //CurrentProgress = 0.f;
 
-    // 비동기 스트리밍 레벨 로드
-    FLatentActionInfo LatentInfo;
-    LatentInfo.CallbackTarget = this;
-    LatentInfo.ExecutionFunction = TEXT("OnStreamLevelLoaded");
-    LatentInfo.Linkage = 0;
-    LatentInfo.UUID = GetUniqueID(); // 유니크 ID 생성
+    //// 로딩 UI 표시
+    //if (auto* UI = GetGameInstance()->GetSubsystem<UURPUISubsystem>())
+    //{
+    //    UI->ShowScreen(EURPScreenType::Loading);
+    //    UI->UpdateLoadingProgress(0.f);
+    //}
 
-    UGameplayStatics::LoadStreamLevel(
-        this->GetWorld(),
-        LevelPackageName,
-        true,    // makeVisibleAfterLoad
-        true,    // shouldBlockOnLoad (false for non-blocking)
-        LatentInfo
-    );
+    //// 비동기 스트리밍 레벨 로드
+    //FLatentActionInfo LatentInfo;
+    //LatentInfo.CallbackTarget = this;
+    //LatentInfo.ExecutionFunction = TEXT("OnStreamLevelLoaded");
+    //LatentInfo.Linkage = 0;
+    //LatentInfo.UUID = GetUniqueID(); // 유니크 ID 생성
 
-    // 진행률 타이머 설정
-    GetWorld()->GetTimerManager().SetTimer(
-        ProgressTimerHandle,
-        this,
-        &UURPLevelTransitionSubsystem::UpdateProgress,
-        0.05f,
-        true
-    );
+    //UGameplayStatics::LoadStreamLevel(
+    //    this->GetWorld(),
+    //    LevelPackageName,
+    //    true,    // makeVisibleAfterLoad
+    //    true,    // shouldBlockOnLoad (false for non-blocking)
+    //    LatentInfo
+    //);
+
+    //// 진행률 타이머 설정
+    //GetWorld()->GetTimerManager().SetTimer(
+    //    ProgressTimerHandle,
+    //    this,
+    //    &UURPLevelTransitionSubsystem::UpdateProgress,
+    //    0.05f,
+    //    true
+    //);
 
     UE_LOG(LogTemp, Log, TEXT("[LevelTransition] Async load started: %s"), *LevelPackageName.ToString());
 }

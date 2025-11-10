@@ -24,6 +24,7 @@ public:
 
     void ApplyServerUpdate(const FString& NewVersion, const TArray<FGameDataPacket>& Tables);
 
+    TOptional<FString> GetPawnPathByClass(EURPClassType ClassType) const;
 
 private:
     static UURPGameDataManager* Instance;
@@ -31,5 +32,10 @@ private:
     FString CachedVersion;
     TArray<FGameDataPacket> GameTables;
 
+    TArray<FURPMonsterRow> MonsterTable;
+    //TArray<FURPItemRow> ItemTable;
+    FCharacterPresetTable PresetTable;
+
     void LoadLocalFallback(); // Content/ 또는 Saved/캐시에서 읽기
+
 };

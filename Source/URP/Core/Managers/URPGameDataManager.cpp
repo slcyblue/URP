@@ -36,10 +36,34 @@ void UURPGameDataManager::LoadLocalFallback()
 
 void UURPGameDataManager::ApplyServerUpdate(const FString& NewVersion, const TArray<FGameDataPacket>& UpdatedTables)
 {
-    // 서버에서 받은 데이터로 갱신
     CachedVersion = NewVersion;
     GameTables = UpdatedTables;
 
-    UE_LOG(LogTemp, Log, TEXT("[GameDataManager] Updated to version %s with %d tables."),
-        *NewVersion, UpdatedTables.Num());
+    for (const FGameDataPacket& Packet : UpdatedTables)
+    {
+        if (Packet.TableName == TEXT("MonsterTable"))
+        {
+            MonsterTable = Packet.MonsterRows;
+        }
+        /*else if (Packet.TableName == TEXT("ItemTable"))
+        {
+            ItemTable = Packet.ItemRows;
+        }*/
+        else if (Packet.TableName == TEXT("CharacterPreset"))
+        {
+            PresetTable = Packet.CharacterPresets;
+        }
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("[GameDataManager] Updated to version %s with %d tables."), *NewVersion, UpdatedTables.Num());
+}
+
+TOptional<FString> UURPGameDataManager::GetPawnPathByClass(EURPClassType ClassType) const
+{
+    for (const auto& P : PresetTable.Presets)
+    {
+        if (P.Class == ClassType && !P.PawnClassPath.IsEmpty())
+            return P.PawnClassPath;
+    }
+    return {};
 }

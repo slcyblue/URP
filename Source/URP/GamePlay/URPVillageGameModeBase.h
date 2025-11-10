@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Data/URPPlayerData.h"
 #include "URPVillageGameModeBase.generated.h"
 
 /**
@@ -12,5 +13,14 @@
 UCLASS()
 class URP_API AURPVillageGameModeBase : public AGameModeBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
+public:
+    UFUNCTION(BlueprintCallable)
+    void InitFromCachedPlayerData();
+
+private:
+    void SpawnFromDataAsync(APlayerController* PC, const FPlayerData& Data);
+    void OnPawnClassLoaded(FSoftObjectPath SoftPath, APlayerController* PC, FPlayerData Data);
+
+    FDelegateHandle PendingLoadHandle; // (선택) 관리용
 };

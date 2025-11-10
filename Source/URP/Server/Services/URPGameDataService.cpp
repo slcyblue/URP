@@ -1,4 +1,7 @@
 #include "Server/Services/URPGameDataService.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
+#include "Services/GameData/Factory/GameDataFactory.h"
 
 UURPGameDataService::UURPGameDataService()
 {
@@ -23,10 +26,33 @@ bool UURPGameDataService::OnSyncGameData(const void* Payload, void* OutResponse)
 
 bool UURPGameDataService::BuildSyncResponse(const FGameDataSyncRequest& Req, FGameDataSyncResponse& Out)
 {
-    // TODO: 실제 서버 버전 비교 로직
-    //Out.bUpToDate = false;
-    //Out.NewVersion = TEXT("1.2.3");
-    //Out.UpdatedTables = { TEXT("MonsterTable"), TEXT("ItemTable"), TEXT("QuestTable") };
+    Out.NewVersion = TEXT("1.0.1");
+    Out.bUpToDate = false;
+
+    UGameDataFactory::RegisterDefaults();
+
+    const FString BasePath = FPaths::ProjectContentDir() / TEXT("ServerData");
+
+    TArray<FString> Tables = {
+        TEXT("MonsterTable"),
+        TEXT("CharacterPreset")
+        // 향후 여기에 "ItemTable", "QuestTable" 추가 가능
+    };
+
+    for (const FString& TableName : Tables)
+    {
+        FString FilePath = BasePath / (TableName + TEXT(".json"));
+        FGameDataPacket Packet;
+        if (UGameDataFactory::BuildPacket(TableName, FilePath, Packet))
+        {
+            Out.UpdatedTables.Add(Packet);
+            UE_LOG(LogTemp, Log, TEXT("[GameDataService] Loaded %s (%d entries)"), *TableName, Out.UpdatedTables.Num());
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("[GameDataService] Failed to load %s"), *TableName);
+        }
+    }
 
     return true;
 }
