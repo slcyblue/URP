@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "URPCharacterBase.h"
+#include <GameFramework/SpringArmComponent.h>
+#include <Camera/CameraComponent.h>
 #include "URPPlayerCharacter.generated.h"
 
 /**
@@ -20,18 +22,16 @@ public:
 
 protected:
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-    /** 카메라 붐 (3rd Person용) */
+    // 카메라 셋팅
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-    class USpringArmComponent* CameraBoom;
+    USpringArmComponent* CameraBoom;
 
-    /** 실제 카메라 */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-    class UCameraComponent* FollowCamera;
+    UCameraComponent* FollowCamera;
 
-    /** 이동 입력 */
-    void MoveForward(float Value);
-    void MoveRight(float Value);
+    void UpdateCameraTransparency(float DeltaTime);
 };

@@ -4,23 +4,33 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/InputComponent.h"
+#include "AIController.h"
 
 AURPPlayerCharacter::AURPPlayerCharacter()
 {
-    // 카메라 붐 생성
+    // === 쿼터뷰 카메라 설정 ===
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
-    CameraBoom->TargetArmLength = 300.f;
-    CameraBoom->bUsePawnControlRotation = true;
+    CameraBoom->TargetArmLength = 1200.f;
+    CameraBoom->SetRelativeRotation(FRotator(-55.f, 0.f, 0.f));
+    CameraBoom->bUsePawnControlRotation = false;
+    CameraBoom->bInheritPitch = false;
+    CameraBoom->bInheritYaw = false;
+    CameraBoom->bInheritRoll = false;
+    CameraBoom->bDoCollisionTest = true;
+    CameraBoom->ProbeSize = 8.f;
 
-    // 카메라 생성
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     FollowCamera->bUsePawnControlRotation = false;
 
-    // 캐릭터 이동 회전
-    bUseControllerRotationYaw = false;
+
     GetCharacterMovement()->bOrientRotationToMovement = true;
+    GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
+    bUseControllerRotationYaw = false;
+
+    AIControllerClass = AAIController::StaticClass();
+    AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AURPPlayerCharacter::BeginPlay()
@@ -30,30 +40,31 @@ void AURPPlayerCharacter::BeginPlay()
     UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] %s BeginPlay"), *GetName());
 }
 
+
+void AURPPlayerCharacter::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    UpdateCameraTransparency(DeltaSeconds);
+}
+
+
 void AURPPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-    PlayerInputComponent->BindAxis("MoveForward", this, &AURPPlayerCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &AURPPlayerCharacter::MoveRight);
 }
 
-void AURPPlayerCharacter::MoveForward(float Value)
+void AURPPlayerCharacter::UpdateCameraTransparency(float DeltaTime)
 {
-    if (Controller && Value != 0.0f)
+    // 충돌 여부에 따라 카메라 거리 조정
+    float DesiredLength = 800.f;
+    if (CameraBoom->bDoCollisionTest && CameraBoom->IsCollisionFixApplied())
     {
-        const FRotator YawRotation(0, Controller->GetControlRotation().Yaw, 0);
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-        AddMovementInput(Direction, Value);
+        DesiredLength = FMath::Lerp(CameraBoom->TargetArmLength, 400.f, DeltaTime * 5.f);
     }
-}
-
-void AURPPlayerCharacter::MoveRight(float Value)
-{
-    if (Controller && Value != 0.0f)
+    else
     {
-        const FRotator YawRotation(0, Controller->GetControlRotation().Yaw, 0);
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-        AddMovementInput(Direction, Value);
+        DesiredLength = FMath::Lerp(CameraBoom->TargetArmLength, 800.f, DeltaTime * 2.f);
     }
+    CameraBoom->TargetArmLength = DesiredLength;
 }

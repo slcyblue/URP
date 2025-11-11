@@ -15,6 +15,8 @@ class URP_API AURPVillageGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 
+    AURPVillageGameModeBase();
+
 protected:
     virtual void BeginPlay() override;
 

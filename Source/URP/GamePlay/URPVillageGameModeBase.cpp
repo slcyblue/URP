@@ -3,9 +3,27 @@
 #include "URPVillageGameModeBase.h"
 #include "Core/Subsystems/URPGameDataSubsystem.h"
 #include "Core/Subsystems/URPUserDataSubsystem.h"
+#include "Characters/URPPlayerController.h"
+#include "Characters/URPPlayerCharacter.h"
 #include "Engine/AssetManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+
+AURPVillageGameModeBase::AURPVillageGameModeBase()
+{
+    // 1. PlayerController 설정
+    PlayerControllerClass = AURPPlayerController::StaticClass();
+
+    // 2. Default Pawn (또는 PlayerCharacter) 설정
+    DefaultPawnClass = nullptr;
+
+    // 3. 필요시 HUD, GameState, PlayerState 도 설정 가능
+    // HUDClass = AURPHUD::StaticClass();
+    // GameStateClass = AURPGameState::StaticClass();
+
+    UE_LOG(LogTemp, Log, TEXT("[VillageGameMode] Controller = %s"),
+        *PlayerControllerClass->GetName());
+}
 
 void AURPVillageGameModeBase::BeginPlay() 
 {
