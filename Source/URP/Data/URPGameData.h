@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "Data/URPCommonEnums.h"
 #include "URPGameData.generated.h"
 
 USTRUCT(BlueprintType)
@@ -32,6 +33,28 @@ struct URP_API FURPMonsterRow
     int32 Skill = 0;
 };
 
+
+USTRUCT(BlueprintType)
+struct FCharacterPreset
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    EURPClassType Class = EURPClassType::None;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString PawnClassPath;
+};
+
+USTRUCT(BlueprintType)
+struct FCharacterPresetTable
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FCharacterPreset> Presets;
+};
+
 USTRUCT(BlueprintType)
 struct URP_API FGameDataPacket
 {
@@ -40,8 +63,18 @@ struct URP_API FGameDataPacket
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString TableName;
 
+    // 실제 데이터
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<FURPMonsterRow> MonsterRows;
+
+    /*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FURPItemRow> ItemRows;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FURPQuestRow> QuestRows;*/
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FCharacterPresetTable CharacterPresets;
 };
 
 USTRUCT(BlueprintType)

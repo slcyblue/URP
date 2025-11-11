@@ -11,9 +11,9 @@
 #include "Core/Subsystems/URPUISubsystem.h"
 #include "Data/URPCommonEnums.h"
 #include "Data/URPLoginData.h"
-#include "Core/Managers/URPUserDataManager.h"
 #include "Core/Subsystems/URPLevelTransitionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
+#include <Core/Subsystems/URPUserDataSubsystem.h>
 
 void UURPLoginWidget::NativeConstruct()
 {
@@ -110,7 +110,7 @@ void UURPLoginWidget::OnPlayerDataLoaded(const FPlayerDataResponse& Response)
     }
 
     // PlayerData를 UserDataManager에 캐싱
-    if (auto* UserData = UURPUserDataManager::Get())
+    if (auto* UserData = GetGameInstance()->GetSubsystem<UURPUserDataSubsystem>())
     {
         UserData->SetUserData(Response.PlayerData);
     }

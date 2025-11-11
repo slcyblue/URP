@@ -1,5 +1,5 @@
 #include "URPNetworkSubsystem.h"
-#include "../Managers/URPGameDataManager.h"
+#include "Core/Subsystems/URPGameDataSubsystem.h"
 #include "Network/LoginRPCHandler.h"
 #include "Network/GameDataRPCHandler.h"
 #include "Network/PlayerDataRPCHandler.h"

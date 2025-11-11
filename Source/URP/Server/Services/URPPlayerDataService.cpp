@@ -55,7 +55,7 @@ bool UURPPlayerDataService::OnLoadPlayer(const void* Payload, void* OutResponse)
     if (!Req || !Res) return false;
 
     FPlayerData OutData;
-    const bool bLoaded = LoadPlayerData(Req->PlayerData.PlayerId, OutData);
+    const bool bLoaded = LoadPlayerData(Req->PlayerId, OutData);
 
     Res->bSuccess = bLoaded;
     Res->PlayerData = OutData;
@@ -72,12 +72,12 @@ bool UURPPlayerDataService::OnSavePlayer(const void* Payload, void* OutResponse)
     FPlayerDataResponse* Res = static_cast<FPlayerDataResponse*>(OutResponse);
     if (!Req || !Res) return false;
 
-    const bool bOK = SavePlayerData(Req->PlayerData.PlayerId, Req->PlayerData);
+    const bool bOK = SavePlayerData(Req->PlayerId, Req->PlayerData);
     Res->bSuccess = bOK;
     Res->PlayerData = Req->PlayerData;
     Res->Message = bOK ? TEXT("Player data saved successfully.") : TEXT("Failed to save player data.");
 
-    UE_LOG(LogTemp, Log, TEXT("[PlayerDataService] SavePlayer(%s): %s"), *Req->PlayerData.PlayerId, bOK ? TEXT("OK") : TEXT("FAIL"));
+    UE_LOG(LogTemp, Log, TEXT("[PlayerDataService] SavePlayer(%s): %s"), *Req->PlayerId, bOK ? TEXT("OK") : TEXT("FAIL"));
     return bOK;
 }
 

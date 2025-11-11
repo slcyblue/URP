@@ -4,8 +4,8 @@
 #include "URPGameInstance.h"
 #include "Subsystems/URPNetworkSubsystem.h"
 #include "Subsystems/URPLevelTransitionSubsystem.h"
-#include "Managers/URPUserDataManager.h"
-#include "Managers/URPGameDataManager.h"
+#include "Subsystems/URPGameDataSubsystem.h"
+#include "Subsystems/URPUserDataSubsystem.h"
 #include "Subsystems/URPUISubsystem.h"
 
 void UURPGameInstance::Init()
@@ -18,10 +18,8 @@ void UURPGameInstance::Init()
     GetSubsystem<UURPNetworkSubsystem>();
     GetSubsystem<UURPUISubsystem>();
     GetSubsystem<UURPLevelTransitionSubsystem>();
-
-    // (수동) 싱글톤 매니저들 기동
-    UURPUserDataManager::Get();     // 세션 동안 유지되는 유저런타임 데이터
-    UURPGameDataManager::Get()->Initialize(); // 로컬 기본 로드 + 서버 버전 체크
+    GetSubsystem<UURPGameDataSubsystem>();
+    GetSubsystem<UURPUserDataSubsystem>();
 }
 
 

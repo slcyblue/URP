@@ -3,22 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "Data/URPGameData.h"
 #include "Data/URPPlayerData.h"
-#include "URPUserDataManager.generated.h"
+#include "URPUserDataSubsystem.generated.h"
 /**
  * 
  */
 
 UCLASS()
-class URP_API UURPUserDataManager : public UObject
+class URP_API UURPUserDataSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
 public:
-    /** 전역 접근 */
-    static UURPUserDataManager* Get();
+    /** 서브시스템 초기화 */
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
     /** 서버에서 받은 유저 데이터 설정 */
     void SetUserData(const FPlayerData& InData);
@@ -35,7 +35,7 @@ public:
     void ClearCurrentPlayerId() { CurrentPlayerId.Reset(); }
 
 private:
-    static UURPUserDataManager* Instance;
+    static UURPUserDataSubsystem* Instance;
 
     /** 캐싱된 유저 데이터 */
     FPlayerData CachedPlayerData;

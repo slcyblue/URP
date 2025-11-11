@@ -1,5 +1,5 @@
 #include "PlayerDataRPCHandler.h"
-#include "Core/Managers/URPUserDataManager.h"
+#include "Core/Subsystems/URPUserDataSubsystem.h"
 #include "../Core/Subsystems/URPNetworkSubsystem.h"
 #include "../Server/URPServerDataService.h"
 #include "../Server/Services/URPPlayerDataService.h"
@@ -56,9 +56,9 @@ void UPlayerDataRPCHandler::Client_ReceivePlayerData_Implementation(const FPlaye
 
     if (Response.Action == TEXT("Load"))
     {
-        if (auto* UserDataManager = UURPUserDataManager::Get())
+        if (auto* UserDataSubsystem = GetSubsystem<UURPUserDataSubsystem>())
         {
-            UserDataManager->SetUserData(Response.PlayerData);
+            UserDataSubsystem->SetUserData(Response.PlayerData);
         }
     }
 }

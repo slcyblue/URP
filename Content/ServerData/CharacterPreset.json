@@ -1,0 +1,8 @@
+{
+  "Presets": [
+    { "Class": "Barbarian", "PawnClassPath": "/Game/Characters/Players/BP_Barbarian.BP_Barbarian_C" },
+    { "Class": "Knight",    "PawnClassPath": "/Game/Characters/Players/BP_Knight.BP_Knight_C" },
+    { "Class": "Mage",      "PawnClassPath": "/Game/Characters/Players/BP_Mage.BP_Mage_C" },
+    { "Class": "Rogue",     "PawnClassPath": "/Game/Characters/Players/BP_Rogue.BP_Rogue_C" }
+  ]
+}

@@ -1,7 +1,7 @@
 #include "URPCharacterSelectWidget.h"
 #include "URPClassSelectButtonWidget.h"
 #include "Data/URPPlayerData.h"
-#include "Core/Managers/URPUserDataManager.h"
+#include "Core/Subsystems/URPUserDataSubsystem.h"
 #include "Core/Subsystems/URPNetworkSubsystem.h"
 #include "Core/Subsystems/URPLevelTransitionSubsystem.h"
 #include "Network/PlayerDataRPCHandler.h"
@@ -72,7 +72,7 @@ void UURPCharacterSelectWidget::OnConfirmClass()
     }
 
     FString LoginId;
-    if (auto* UserDataMgr = UURPUserDataManager::Get())
+    if (auto* UserDataMgr = GetGameInstance()->GetSubsystem<UURPUserDataSubsystem>())
     {
         LoginId = UserDataMgr->GetCurrentPlayerId();
 

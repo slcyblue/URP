@@ -14,6 +14,17 @@ class URP_API UBaseRPCHandler : public UObject
 public:
     virtual void Initialize(UURPNetworkSubsystem* InSubsystem);
 
+    UGameInstance* GetGameInstance() const;
+
+    template <typename T>
+    T* GetSubsystem() const
+    {
+        if (UGameInstance* GI = GetGameInstance())
+        {
+            return GI->GetSubsystem<T>();
+        }
+        return nullptr;
+    }
 protected:
     UPROPERTY()
     UURPNetworkSubsystem* NetworkSubsystem;

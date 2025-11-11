@@ -3,7 +3,7 @@
 #include "../Network/PlayerDataRPCHandler.h"
 #include "../Server/URPServerDataService.h"
 #include "../Server/Services/URPAccountService.h"
-#include "Core/Managers/URPUserDataManager.h"
+#include "Core/Subsystems/URPUserDataSubsystem.h"
 
 
 void ULoginRPCHandler::Initialize(UURPNetworkSubsystem* InNetwork)
@@ -29,5 +29,5 @@ void ULoginRPCHandler::Client_LoginResponse_Implementation(const FLoginResponse&
     // Delegate 브로드캐스트
     OnLoginResponse.Broadcast(Response);
 
-    UURPUserDataManager::Get()->SetCurrentPlayerId(Response.PlayerId);
+    GetSubsystem<UURPUserDataSubsystem>()->SetCurrentPlayerId(Response.PlayerId);
 }

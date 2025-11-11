@@ -1,0 +1,22 @@
+[
+    {
+        "Name": "Skeleton",
+        "Body": "UndeadWarrior",
+        "MaxHp": 150,
+        "Attack": 12.5,
+        "AttackRange": 120,
+        "AttackSpeed": 1.1,
+        "MovementSpeed": 380,
+        "Skill": 1
+    },
+    {
+        "Name": "Goblin",
+        "Body": "GreenScout",
+        "MaxHp": 80,
+        "Attack": 8.0,
+        "AttackRange": 100,
+        "AttackSpeed": 1.5,
+        "MovementSpeed": 420,
+        "Skill": 2
+    }
+]
