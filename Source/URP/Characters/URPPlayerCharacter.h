@@ -4,6 +4,7 @@
 #include "URPCharacterBase.h"
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
+#include "Animations/URPPlayerAnimInstance.h"
 #include "URPPlayerCharacter.generated.h"
 
 /**
@@ -34,4 +35,9 @@ private:
     UCameraComponent* FollowCamera;
 
     void UpdateCameraTransparency(float DeltaTime);
+
+    UURPPlayerAnimInstance* Anim;
+    
+    void PlayAttack();
+    void PlaySkill();
 };

@@ -19,6 +19,16 @@ void AURPPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
+    CachedCharacter = Cast<AURPPlayerCharacter>(GetPawn());
+    if (!CachedCharacter)
+    {
+        // Pawn이 아직 스폰 안된 경우를 대비
+        GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+            {
+                CachedCharacter = Cast<AURPPlayerCharacter>(GetPawn());
+            });
+    }
+
     FInputModeGameAndUI InputMode; // 또는 FInputModeGameOnly
     InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
     InputMode.SetHideCursorDuringCapture(false);

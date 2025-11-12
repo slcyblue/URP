@@ -37,6 +37,7 @@ void AURPPlayerCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
+    Anim = Cast<UURPPlayerAnimInstance>(GetMesh()->GetAnimInstance());
     UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] %s BeginPlay"), *GetName());
 }
 
@@ -45,6 +46,12 @@ void AURPPlayerCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     UpdateCameraTransparency(DeltaSeconds);
+
+    if (Anim)
+    {
+        Anim->Speed = GetVelocity().Size();
+        Anim->bIsMoving = Anim->Speed > 5.f;
+    }
 }
 
 
@@ -67,4 +74,23 @@ void AURPPlayerCharacter::UpdateCameraTransparency(float DeltaTime)
         DesiredLength = FMath::Lerp(CameraBoom->TargetArmLength, 800.f, DeltaTime * 2.f);
     }
     CameraBoom->TargetArmLength = DesiredLength;
+}
+
+
+void AURPPlayerCharacter::PlayAttack()
+{
+    if (Anim)
+    {
+        Anim->bIsAttacking = true;
+        // 몽타주 재생 등 가능
+    }
+}
+
+void AURPPlayerCharacter::PlaySkill()
+{
+    if (Anim)
+    {
+        Anim->bIsUsingSkill = true;
+        // 스킬 애니메이션 재생 등
+    }
 }

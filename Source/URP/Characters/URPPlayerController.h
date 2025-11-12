@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Characters/URPPlayerCharacter.h"
 #include "URPPlayerController.generated.h"
 
 UCLASS()
@@ -34,4 +35,7 @@ public:
 
 private:
     bool bIsMoving = false;
+
+    UPROPERTY()
+    AURPPlayerCharacter* CachedCharacter;
 };
