@@ -35,3 +35,13 @@ enum class EURPClassType : uint8
     Mage UMETA(DisplayName = "Mage"),
     Rogue UMETA(DisplayName = "Rogue")
 };
+
+UENUM(BlueprintType)
+enum class EURPMonsterType : uint8
+{
+    None UMETA(DisplayName = "None"),
+    SkeletonMinion UMETA(DisplayName = "SK_Minion"),
+    SkeletonKnight UMETA(DisplayName = "SK_Knight"),
+    SkeletonMage UMETA(DisplayName = "SK_Mage"),
+    SkeletonRogue UMETA(DisplayName = "SK_Rogue")
+};

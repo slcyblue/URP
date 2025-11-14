@@ -8,6 +8,8 @@
 #include "Engine/AssetManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+#include "GamePlay/URPMonsterSpawnZone.h"
+#include "EngineUtils.h"
 
 AURPVillageGameModeBase::AURPVillageGameModeBase()
 {
@@ -30,6 +32,13 @@ void AURPVillageGameModeBase::BeginPlay()
     Super::BeginPlay();
 
     InitFromCachedPlayerData();
+
+    // 서버 전용
+    if (HasAuthority())
+    {
+        InitializeSpawnZones();
+
+    }
 }
 
 void AURPVillageGameModeBase::InitFromCachedPlayerData()
@@ -108,4 +117,36 @@ void AURPVillageGameModeBase::OnPawnClassLoaded(FSoftObjectPath SoftPath, APlaye
 
     // TODO: 여기서 Data(레벨/스킬/인벤토리) 주입 (인터페이스/세터)
     UE_LOG(LogTemp, Log, TEXT("[VillageGM] Spawned %s for %s"), *PawnClass->GetName(), *Data.PlayerId);
+}
+
+void AURPVillageGameModeBase::InitializeSpawnZones()
+{
+    SpawnZones.Empty();
+
+    for (TActorIterator<AURPMonsterSpawnZone> It(GetWorld()); It; ++It)
+    {
+        SpawnZones.Add(*It);
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("[VillageGM] SpawnZones Found: %d"), SpawnZones.Num());
+
+    MonsterPool = NewObject<UURPMonsterPool>(this);
+
+    // MonsterClass는 SpawnZone에서 정한 공용 Monster BP 클래스
+    // 또는 GameDataSubsystem에서 공용 MonsterClass를 가져올 수도 있음.
+    TSubclassOf<AURPMonsterCharacter> CommonMonsterClass = AURPMonsterCharacter::StaticClass();
+
+    int32 InitialPoolSize = 30;  // 초기 풀 크기 (원하는 만큼)
+    MonsterPool->InitializePool(GetWorld(), CommonMonsterClass, InitialPoolSize);
+
+    // -----------------------
+    // 모든 SpawnZone에 MonsterPool 연결
+    // -----------------------
+    for (auto* Zone : SpawnZones)
+    {
+        if (IsValid(Zone))
+        {
+            Zone->MonsterPool = MonsterPool;
+        }
+    }
 }

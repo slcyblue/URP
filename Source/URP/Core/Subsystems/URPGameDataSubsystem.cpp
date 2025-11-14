@@ -105,3 +105,15 @@ TOptional<FString> UURPGameDataSubsystem::GetPawnPathByClass(EURPClassType Class
     }
     return {};
 }
+
+const FURPMonsterRow* UURPGameDataSubsystem::GetMonsterRow(const FString ID)
+{
+    for (const auto& MT : MonsterTable)
+    {
+        if (MT.Name == ID) 
+        {
+            return &MT;
+        }
+    }
+    return nullptr;
+}

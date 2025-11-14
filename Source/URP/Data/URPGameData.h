@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Data/URPCommonEnums.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "URPGameData.generated.h"
 
 USTRUCT(BlueprintType)
@@ -12,25 +13,25 @@ struct URP_API FURPMonsterRow
     FString Name;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString Body;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int64 MaxHp = 100;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     float Attack = 10.f;
 
+    // 외형(스켈레탈메시)
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float AttackRange = 120.f;
+    FString MeshPath;
+
+    // 애니메이션 블루프린트
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString AnimClassPath;
+
+    // AI 행동 트리
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString BehaviorTreePath;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float AttackSpeed = 1.2f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float MovementSpeed = 400.f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 Skill = 0;
+    FString DeathMontagePath;
 };
 
 

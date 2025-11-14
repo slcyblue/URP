@@ -32,6 +32,8 @@ public:
 
     TOptional<FString> GetPawnPathByClass(EURPClassType ClassType) const;
 
+    const FURPMonsterRow* GetMonsterRow(const FString ID);
+
 private:
     static UURPGameDataSubsystem* Instance;
 

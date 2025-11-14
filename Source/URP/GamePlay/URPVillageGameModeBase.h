@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Data/URPPlayerData.h"
+#include "URPMonsterPool.h"
+#include "Characters/URPMonsterCharacter.h"
 #include "URPVillageGameModeBase.generated.h"
 
 /**
@@ -29,4 +31,16 @@ private:
     void OnPawnClassLoaded(FSoftObjectPath SoftPath, APlayerController* PC, FPlayerData Data);
 
     FDelegateHandle PendingLoadHandle;
+
+public:
+    UPROPERTY()
+    TArray<class AURPMonsterSpawnZone*> SpawnZones;
+
+private:
+    FTimerHandle SpawnTimerHandle;
+
+    void InitializeSpawnZones();
+    void SpawnTick();
+
+    UURPMonsterPool* MonsterPool;
 };
