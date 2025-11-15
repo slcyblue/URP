@@ -78,7 +78,7 @@ private:
     /* 스폰 로직 */
     void SpawnMissingMonsters();
     bool FindValidSpawnPoint(FVector& OutLocation);
-    const FURPMonsterRow* GetRandomMonsterRow() const;
+    const FString GetRandomMonsterName() const;
     void ReturnMonsterToPool(AURPMonsterCharacter* Mob);
     void ReturnAllMonstersToPool();
 };

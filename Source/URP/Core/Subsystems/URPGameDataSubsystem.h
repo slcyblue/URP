@@ -34,6 +34,8 @@ public:
 
     const FURPMonsterRow* GetMonsterRow(const FString ID);
 
+    const FURPPathConfig& GetPathConfig() const { return PathConfig; }
+
 private:
     static UURPGameDataSubsystem* Instance;
 
@@ -44,6 +46,8 @@ private:
     TArray<FURPMonsterRow> MonsterTable;
     //TArray<FURPItemRow> ItemTable;
     FCharacterPresetTable PresetTable;
+
+    FURPPathConfig PathConfig;
 
     void LoadLocalFallback(); // Content/ 또는 Saved/캐시에서 읽기
 };

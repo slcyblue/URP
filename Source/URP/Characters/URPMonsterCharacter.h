@@ -27,7 +27,7 @@ public:
     void SetActive(bool bActive);
     bool IsActive() const { return bIsActive; }
 
-    void InitializeFromMonsterData(const FURPMonsterRow& Data, int32 DifficultyLevel);
+    void InitializeFromMonsterData(const FString MonsterName, int32 DifficultyLevel);
 
     UPROPERTY()
     AURPMonsterSpawnZone* OwningZone;
@@ -38,9 +38,9 @@ protected:
 private:
     bool bIsActive = false;
 
-    void ApplyAppearance(const FURPMonsterRow& Data, int32 DifficultyLevel);
+    void ApplyAppearance(const FURPMonsterRow& Data, const FURPPathConfig& Path, int32 DifficultyLevel);
     void ApplyStats(const FURPMonsterRow& Data, int32 DifficultyLevel);
-    void ApplyAI(const FURPMonsterRow& Data);
+    void ApplyAI(const FURPPathConfig& Path);
 
     /** 몬스터 Death 몽타주 */
     UPROPERTY(EditAnywhere, Category = "Animation")

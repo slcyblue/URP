@@ -27,16 +27,20 @@ bool UURPGameDataService::BuildSyncResponse(const FGameDataSyncRequest& Req, FGa
     Out.NewVersion = TEXT("1.0.1");
     Out.bUpToDate = false;
 
+    // 팩토리 등록
     UURPGameDataFactory::RegisterDefaults();
 
     const FString BasePath = FPaths::ProjectContentDir() / TEXT("ServerData");
 
+
+    // 로드할 Json 테이블 이름 추가
     TArray<FString> Tables = {
         TEXT("MonsterTable"),
-        TEXT("CharacterPreset")
-        // 향후 여기에 "ItemTable", "QuestTable" 추가 가능
+        TEXT("CharacterPreset"),
+        TEXT("PathConfig")
     };
 
+    // 패킷 생성
     for (const FString& TableName : Tables)
     {
         FString FilePath = BasePath / (TableName + TEXT(".json"));

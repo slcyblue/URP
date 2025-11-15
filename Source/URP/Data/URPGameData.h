@@ -21,17 +21,44 @@ struct URP_API FURPMonsterRow
     // 외형(스켈레탈메시)
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString MeshPath;
+};
 
-    // 애니메이션 블루프린트
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString AnimClassPath;
+USTRUCT(BlueprintType)
+struct FURPPathConfig
+{
+    GENERATED_BODY()
+    
+    // Monster Class
+    UPROPERTY()
+    FString MonsterBPBase;
 
-    // AI 행동 트리
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString BehaviorTreePath;
+    UPROPERTY()
+    FString DefaultBPName;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString DeathMontagePath;
+    UPROPERTY()
+    FString MonsterMeshBase;
+
+    UPROPERTY()
+    FString DefaultMonsterAnimBP;
+
+    UPROPERTY()
+    FString DefaultMonsterBT;
+
+    UPROPERTY()
+    FString DefaultMonsterDeath;
+
+    // Player Class
+    UPROPERTY()
+    FString PlayerBPBase;
+
+    UPROPERTY()
+    FString PlayerMeshBase;
+
+    UPROPERTY()
+    FString DefaultPlayerAnimBP;
+
+    UPROPERTY()
+    TMap<FString, FString> PlayerClassMap;
 };
 
 
@@ -65,6 +92,9 @@ struct URP_API FGameDataPacket
     FString TableName;
 
     // 실제 데이터
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FURPPathConfig PathConfigs;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<FURPMonsterRow> MonsterRows;
 

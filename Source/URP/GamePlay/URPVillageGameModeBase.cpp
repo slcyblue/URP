@@ -132,10 +132,16 @@ void AURPVillageGameModeBase::InitializeSpawnZones()
 
     MonsterPool = NewObject<UURPMonsterPool>(this);
 
-    // MonsterClass는 SpawnZone에서 정한 공용 Monster BP 클래스
-    // 또는 GameDataSubsystem에서 공용 MonsterClass를 가져올 수도 있음.
-    TSubclassOf<AURPMonsterCharacter> CommonMonsterClass = AURPMonsterCharacter::StaticClass();
+    UURPGameDataSubsystem* GDS = GetGameInstance()->GetSubsystem<UURPGameDataSubsystem>();
+    const auto& Paths = GDS->GetPathConfig();
 
+    FString FullPath = Paths.MonsterBPBase
+        + Paths.DefaultBPName
+        + TEXT(".")
+        + Paths.DefaultBPName
+        + TEXT("_C");
+
+    TSubclassOf<AURPMonsterCharacter> CommonMonsterClass = LoadClass<AURPMonsterCharacter>(nullptr, *FullPath);
     int32 InitialPoolSize = 30;  // 초기 풀 크기 (원하는 만큼)
     MonsterPool->InitializePool(GetWorld(), CommonMonsterClass, InitialPoolSize);
 

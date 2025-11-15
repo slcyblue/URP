@@ -21,9 +21,6 @@ void AURPMonsterSpawnZone::BeginPlay()
 {
     Super::BeginPlay();
 
-    MonsterPool = NewObject<UURPMonsterPool>(this);
-    MonsterPool->InitializePool(GetWorld(), MonsterClass, MaxCount);
-
     ZoneTrigger->OnComponentBeginOverlap.AddDynamic(this, &AURPMonsterSpawnZone::OnPlayerEnterZone);
     ZoneTrigger->OnComponentEndOverlap.AddDynamic(this, &AURPMonsterSpawnZone::OnPlayerExitZone);
 }
@@ -114,11 +111,11 @@ void AURPMonsterSpawnZone::SpawnMissingMonsters()
 
         Mob->SetActorLocation(Loc);
 
-        const FURPMonsterRow* Row = GetRandomMonsterRow();
-        if (!Row) continue;
+        const FString RandomName = GetRandomMonsterName();
+        if (RandomName.IsEmpty()) continue;
 
         // 몬스터 데이터 초기화
-        Mob->InitializeFromMonsterData(*Row, ZoneLevel);
+        Mob->InitializeFromMonsterData(RandomName, ZoneLevel);
         Mob->OwningZone = this;
 
         CurrentMonsters.Add(Mob);
@@ -136,9 +133,10 @@ bool AURPMonsterSpawnZone::FindValidSpawnPoint(FVector& OutLocation)
         FNavLocation P;
         if (Nav->GetRandomPointInNavigableRadius(GetActorLocation(), SpawnRadius, P))
         {
+            FVector CheckLocation = P.Location + FVector(0, 0, 80.f);
             FCollisionShape Capsule = FCollisionShape::MakeCapsule(40.f, 80.f);
             bool Blocked = GetWorld()->OverlapBlockingTestByChannel(
-                P.Location, FQuat::Identity, ECC_Pawn, Capsule);
+                CheckLocation, FQuat::Identity, ECC_Pawn, Capsule);
 
             if (!Blocked)
             {
@@ -150,20 +148,14 @@ bool AURPMonsterSpawnZone::FindValidSpawnPoint(FVector& OutLocation)
     return false;
 }
 
-const FURPMonsterRow* AURPMonsterSpawnZone::GetRandomMonsterRow() const
+const FString AURPMonsterSpawnZone::GetRandomMonsterName() const
 {
     if (MonsterName.Num() == 0)
-        return nullptr;
+        return TEXT("");
 
     // 1) 이름 리스트에서 랜덤 선택
-    FString SelectedName = MonsterName[FMath::RandRange(0, MonsterName.Num() - 1)];
+    return MonsterName[FMath::RandRange(0, MonsterName.Num() - 1)];
 
-    // 2) GameDataManager에서 Row 데이터 찾기
-    auto* GameData = GetGameInstance()->GetSubsystem<UURPGameDataSubsystem>();
-    if (!GameData)
-        return nullptr;
-
-    return GameData->GetMonsterRow(SelectedName);
 }
 
 void AURPMonsterSpawnZone::ReturnMonsterToPool(AURPMonsterCharacter* Mob)

@@ -1,6 +1,7 @@
 #include "URPGameDataFactory.h"
 #include "GameData/MonsterTableLoader.h"
 #include "GameData/CharacterPresetLoader.h"
+#include "GameData/PathConfigLoader.h"
 
 TMap<FString, TSharedPtr<IGameDataLoader>> UURPGameDataFactory::Loaders;
 
@@ -10,6 +11,7 @@ void UURPGameDataFactory::RegisterDefaults()
 
     Loaders.Add(TEXT("MonsterTable"), MakeShared<FMonsterTableLoader>());
     Loaders.Add(TEXT("CharacterPreset"), MakeShared<FCharacterPresetLoader>());
+    Loaders.Add(TEXT("PathConfig"), MakeShared<FPathConfigLoader>());
 }
 
 bool UURPGameDataFactory::BuildPacket(const FString& TableName, const FString& FilePath, FGameDataPacket& OutPacket)

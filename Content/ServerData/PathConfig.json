@@ -1,0 +1,34 @@
+{
+  "Monster": {
+    "BPBase": "/Game/Blueprints/Monster/",
+    "DefaultBPName": "BP_MonsterCharacter",
+
+    "MeshBase": "/Game/Characters/Monsters/",
+
+    "AnimBP": "/Game/Blueprints/Monster/ABP_MonsterCharacter.ABP_MonsterCharacter_C",
+    "DefaultBT": "/Game/AI/BT_Monster_Default",
+    "DefaultDeath": "/Game/Animations/Monster/DefaultDeath",
+
+    "BossBPName": "BP_MonsterBossCharacter",
+    "EliteBPName": "BP_MonsterEliteCharacter"
+  },
+
+  "Player": {
+    "BPBase": "/Game/Blueprints/Player/",
+    "MeshBase": "/Game/Characters/Player/",
+    "AnimBP": "/Game/Blueprints/Player/ABP_Player",
+
+    "Classes": {
+      "Warrior": "BP_Player_Warrior",
+      "Mage": "BP_Player_Mage",
+      "Rogue": "BP_Player_Rogue",
+      "Archer": "BP_Player_Archer"
+    }
+  },
+
+  "Global": {
+    "EffectBase": "/Game/Effects/",
+    "SoundBase": "/Game/Sounds/",
+    "UIBase": "/Game/UI/"
+  }
+}

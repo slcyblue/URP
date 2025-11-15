@@ -1,5 +1,6 @@
 #include "URPMonsterPool.h"
 #include "Characters/URPMonsterCharacter.h"
+#include <Core/Subsystems/URPGameDataSubsystem.h>
 
 void UURPMonsterPool::InitializePool(UWorld* World, TSubclassOf<AURPMonsterCharacter> InMonsterClass, int32 MaxSize)
 {

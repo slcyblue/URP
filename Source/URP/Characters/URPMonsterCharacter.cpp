@@ -4,6 +4,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include <Net/UnrealNetwork.h>
 #include "GameFramework/CharacterMovementComponent.h"
+#include <Core/Subsystems/URPGameDataSubsystem.h>
 
 AURPMonsterCharacter::AURPMonsterCharacter()
 {
@@ -37,18 +38,21 @@ void AURPMonsterCharacter::SetActive(bool bActive)
     }
 }
 
-void AURPMonsterCharacter::InitializeFromMonsterData(const FURPMonsterRow& Data, int32 DifficultyLevel)
+void AURPMonsterCharacter::InitializeFromMonsterData(const FString MonsterName, int32 DifficultyLevel)
 {
-    ApplyAppearance(Data, DifficultyLevel);
-    ApplyStats(Data, DifficultyLevel);
-    ApplyAI(Data);
+    UURPGameDataSubsystem* GDS = GetGameInstance()->GetSubsystem<UURPGameDataSubsystem>();
+    const FURPMonsterRow* Data = GDS->GetMonsterRow(MonsterName);
+    const FURPPathConfig& Path = GDS->GetPathConfig();
+    ApplyAppearance(*Data , Path, DifficultyLevel);
+    ApplyStats(*Data, DifficultyLevel);
+    ApplyAI(Path);
 
     SetActorHiddenInGame(false);
     SetActorEnableCollision(true);
     SetActorTickEnabled(true);
 }
 
-void AURPMonsterCharacter::ApplyAppearance(const FURPMonsterRow& Data, int32 DifficultyLevel)
+void AURPMonsterCharacter::ApplyAppearance(const FURPMonsterRow& Data, const FURPPathConfig& Path, int32 DifficultyLevel)
 {
     // SkeletalMesh
     if (!Data.MeshPath.IsEmpty())
@@ -61,9 +65,9 @@ void AURPMonsterCharacter::ApplyAppearance(const FURPMonsterRow& Data, int32 Dif
     }
 
     // AnimBlueprint
-    if (!Data.AnimClassPath.IsEmpty())
+    if (!Path.DefaultMonsterAnimBP.IsEmpty())
     {
-        UClass* AnimClass = LoadClass<UAnimInstance>(nullptr, *Data.AnimClassPath);
+        UClass* AnimClass = LoadClass<UAnimInstance>(nullptr, *Path.DefaultMonsterAnimBP);
         if (AnimClass)
         {
             GetMesh()->SetAnimInstanceClass(AnimClass);
@@ -102,11 +106,11 @@ void AURPMonsterCharacter::ApplyStats(const FURPMonsterRow& Data, int32 Difficul
     GetCharacterMovement()->MaxWalkSpeed = MoveSpeed*/
 }
 
-void AURPMonsterCharacter::ApplyAI(const FURPMonsterRow& Data)
+void AURPMonsterCharacter::ApplyAI(const FURPPathConfig& Path)
 {
-    if (!Data.BehaviorTreePath.IsEmpty())
+    if (!Path.DefaultMonsterBT.IsEmpty())
     {
-        UBehaviorTree* BT = LoadObject<UBehaviorTree>(nullptr, *Data.BehaviorTreePath);
+        UBehaviorTree* BT = LoadObject<UBehaviorTree>(nullptr, *Path.DefaultMonsterBT);
         if (BT)
         {
             if (AAIController* AIC = Cast<AAIController>(GetController()))

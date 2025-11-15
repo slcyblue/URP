@@ -91,6 +91,10 @@ void UURPGameDataSubsystem::ApplyServerUpdate(const FGameDataSyncResponse& Respo
         {
             PresetTable = Packet.CharacterPresets;
         }
+        else if (Packet.TableName == TEXT("PathConfig")) 
+        {
+            PathConfig = Packet.PathConfigs;
+        }
     }
 
     UE_LOG(LogTemp, Log, TEXT("[GameDataManager] Updated to version %s with %d tables."), *Response.NewVersion, Response.UpdatedTables.Num());

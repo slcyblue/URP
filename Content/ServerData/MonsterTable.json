@@ -1,7 +1,6 @@
 [
   {
     "Name": "Warrior",
-    "Body": "Skeleton_Warrior",
     "MaxHp": 200,
     "Attack": 18.0,
     "AttackRange": 150,
@@ -9,14 +8,10 @@
     "MovementSpeed": 350,
     "Skill": 2,
 
-    "MeshPath": "/Game/Characters/Monsters/Skeleton_Warrior.Skeleton_Warrior",
-    "AnimClassPath": "/Game/Blueprints/Monster/ABP_MonsterCharacter.ABP_MonsterCharacter_c",
-    "BehaviorTreePath": "/Game/AI/BT_Monster_Warrior",
-    "DeathMontagePath": "/Game/Animations/Monster/MTG_SkeletonWarrior_Death"
+    "MeshPath": "/Game/Characters/Monsters/Skeleton_Warrior.Skeleton_Warrior"
   },
   {
     "Name": "Mage",
-    "Body": "Skeleton_Mage",
     "MaxHp": 110,
     "Attack": 25.0,
     "AttackRange": 300,
@@ -24,14 +19,10 @@
     "MovementSpeed": 330,
     "Skill": 3,
 
-    "MeshPath": "/Game/Characters/Monsters/Skeleton_Mage.Skeleton_Mage",
-    "AnimClassPath": "/Game/Blueprints/Monster/ABP_MonsterCharacter.ABP_MonsterCharacter_c",
-    "BehaviorTreePath": "/Game/AI/BT_Monster_Mage",
-    "DeathMontagePath": "/Game/Animations/Monster/MTG_SkeletonMage_Death"
+    "MeshPath": "/Game/Characters/Monsters/Skeleton_Mage.Skeleton_Mage"
   },
   {
     "Name": "Rogue",
-    "Body": "Skeleton_Rogue",
     "MaxHp": 90,
     "Attack": 15.0,
     "AttackRange": 130,
@@ -39,14 +30,10 @@
     "MovementSpeed": 420,
     "Skill": 4,
 
-    "MeshPath": "/Game/Characters/Monsters/Skeleton_Rogue.Skeleton_Rogue",
-    "AnimClassPath": "/Game/Blueprints/Monster/ABP_MonsterCharacter.ABP_MonsterCharacter_c",
-    "BehaviorTreePath": "/Game/AI/BT_Monster_Rogue",
-    "DeathMontagePath": "/Game/Animations/Monster/MTG_SkeletonRogue_Death"
+    "MeshPath": "/Game/Characters/Monsters/Skeleton_Rogue.Skeleton_Rogue"
   },
   {
     "Name": "Minion",
-    "Body": "Skeleton_Minion",
     "MaxHp": 60,
     "Attack": 6.0,
     "AttackRange": 100,
@@ -54,9 +41,6 @@
     "MovementSpeed": 380,
     "Skill": 5,
 
-    "MeshPath": "/Game/Characters/Monsters/Skeleton_Minion.Skeleton_Minion",
-    "AnimClassPath": "/Game/Blueprints/Monster/ABP_MonsterCharacter.ABP_MonsterCharacter_c",
-    "BehaviorTreePath": "/Game/AI/BT_Monster_Minion",
-    "DeathMontagePath": "/Game/Animations/Monster/MTG_SkeletonMinion_Death"
+    "MeshPath": "/Game/Characters/Monsters/Skeleton_Minion.Skeleton_Minion"
   }
 ]
