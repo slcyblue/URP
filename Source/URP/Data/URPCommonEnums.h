@@ -45,3 +45,14 @@ enum class EURPMonsterType : uint8
     SkeletonMage UMETA(DisplayName = "SK_Mage"),
     SkeletonRogue UMETA(DisplayName = "SK_Rogue")
 };
+
+UENUM(BlueprintType)
+enum class EAIState : uint8
+{
+    Idle,
+    Patrol,
+    Chase,
+    Attack,
+    Return,
+    Dead
+};

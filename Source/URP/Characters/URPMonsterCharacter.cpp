@@ -5,6 +5,8 @@
 #include <Net/UnrealNetwork.h>
 #include "GameFramework/CharacterMovementComponent.h"
 #include <Core/Subsystems/URPGameDataSubsystem.h>
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 AURPMonsterCharacter::AURPMonsterCharacter()
 {
@@ -146,6 +148,19 @@ void AURPMonsterCharacter::Die()
             AnimInst->Montage_SetEndDelegate(EndDelegate, DeathMontage);
             return;
         }
+    }
+
+
+    // AI Reset
+    if (AAIController* AI = Cast<AAIController>(GetController()))
+    {
+        if (UBlackboardComponent* BB = AI->GetBlackboardComponent())
+        {
+            BB->ClearValue("TargetActor");
+            BB->SetValueAsBool("HasTarget", false);
+            BB->SetValueAsEnum("AIState", (uint8)EAIState::Dead);
+        }
+        AI->StopMovement();
     }
 
     // 몽타주 없으면 즉시 반환
