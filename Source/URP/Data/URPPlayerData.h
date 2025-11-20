@@ -16,7 +16,6 @@ struct URP_API FSkillEntry
 };
 
 
-// 필요한 만큼 확장하세요(인벤토리, 스킬 등)
 USTRUCT(BlueprintType)
 struct URP_API FPlayerData
 {
@@ -92,4 +91,34 @@ struct URP_API FPlayerDataResponse
         : bSuccess(false)
     {
     }
+};
+
+USTRUCT(BlueprintType)
+struct URP_API FURPClassData
+{
+    GENERATED_BODY();
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<UAnimInstance> AnimClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float BaseAttack = 10.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float BaseDefense = 0.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float AttackSpeed = 1.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<AActor> MainWeapon;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<AActor> OffHandItem;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool bUseShield = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    EURPClassType ClassType = EURPClassType::None;
 };

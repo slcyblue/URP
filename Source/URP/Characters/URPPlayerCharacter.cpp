@@ -11,7 +11,7 @@ AURPPlayerCharacter::AURPPlayerCharacter()
     // === 쿼터뷰 카메라 설정 ===
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
-    CameraBoom->TargetArmLength = 1200.f;
+    CameraBoom->TargetArmLength = 2000.f;
     CameraBoom->SetRelativeRotation(FRotator(-55.f, 0.f, 0.f));
     CameraBoom->bUsePawnControlRotation = false;
     CameraBoom->bInheritPitch = false;
@@ -31,6 +31,10 @@ AURPPlayerCharacter::AURPPlayerCharacter()
 
     AIControllerClass = AAIController::StaticClass();
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+    Combat = CreateDefaultSubobject<UURPPlayerCombatComponent>("Combat");
+    ClassComponent = CreateDefaultSubobject<UURPPlayerClassComponent>("Class");
+    Equipment = CreateDefaultSubobject<UURPPlayerEquipmentComponent>("Equip");
 }
 
 void AURPPlayerCharacter::BeginPlay()

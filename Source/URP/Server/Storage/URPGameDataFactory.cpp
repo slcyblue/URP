@@ -12,6 +12,7 @@ void UURPGameDataFactory::RegisterDefaults()
     Loaders.Add(TEXT("MonsterTable"), MakeShared<FMonsterTableLoader>());
     Loaders.Add(TEXT("CharacterPreset"), MakeShared<FCharacterPresetLoader>());
     Loaders.Add(TEXT("PathConfig"), MakeShared<FPathConfigLoader>());
+    Loaders.Add(TEXT("SkillData"), MakeShared<FPathConfigLoader>());
 }
 
 bool UURPGameDataFactory::BuildPacket(const FString& TableName, const FString& FilePath, FGameDataPacket& OutPacket)

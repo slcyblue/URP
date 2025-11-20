@@ -2,10 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "URPCharacterBase.h"
+#include "URPPlayerClassComponent.h"
+#include "URPPlayerCombatComponent.h"
+#include "URPPlayerEquipmentComponent.h"
+#include "URPPlayerSkillComponent.h"
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
 #include "Animations/URPPlayerAnimInstance.h"
 #include "URPPlayerCharacter.generated.h"
+
+
 
 /**
  * 플레이어 전용 캐릭터 클래스
@@ -21,10 +27,23 @@ class URP_API AURPPlayerCharacter : public AURPCharacterBase
 public:
     AURPPlayerCharacter();
 
+    UPROPERTY(VisibleAnywhere)
+    class UURPPlayerClassComponent* ClassComponent;
+
+    UPROPERTY(VisibleAnywhere)
+    UURPPlayerEquipmentComponent* Equipment;
+
+    UPROPERTY(VisibleAnywhere)
+    UURPPlayerSkillComponent* SkillComponent;
+
+    void PlayAttack();
+    void PlaySkill();
+
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 
 private:
     // 카메라 셋팅
@@ -37,7 +56,7 @@ private:
     void UpdateCameraTransparency(float DeltaTime);
 
     UURPPlayerAnimInstance* Anim;
-    
-    void PlayAttack();
-    void PlaySkill();
+        
+    UPROPERTY(VisibleAnywhere)
+    UURPPlayerCombatComponent* Combat;
 };

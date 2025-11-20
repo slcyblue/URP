@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Data/URPCommonEnums.h"
+#include "Data/URPSkillData.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "URPGameData.generated.h"
 
@@ -83,6 +84,16 @@ struct FCharacterPresetTable
     TArray<FCharacterPreset> Presets;
 };
 
+
+USTRUCT(BlueprintType)
+struct FURPClassData
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    EURPClassType Class = EURPClassType::None;
+};
+
 USTRUCT(BlueprintType)
 struct URP_API FGameDataPacket
 {
@@ -106,6 +117,12 @@ struct URP_API FGameDataPacket
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FCharacterPresetTable CharacterPresets;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FURPSkillRow> SkillDatas;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FURPClassData> ClassData;
 };
 
 USTRUCT(BlueprintType)

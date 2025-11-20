@@ -3,6 +3,8 @@
 
 #include "URP/Characters/URPCharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Characters/URPMonsterCharacter.h"
+#include "Characters/URPPlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -33,4 +35,16 @@ void AURPCharacterBase::ApplyDamage(float Amount)
 
     UE_LOG(LogTemp, Log, TEXT("[%s] Took Damage: %.1f | HP: %lld / %lld"),
         *GetName(), Amount, CurrentHp, MaxHp);
+
+    if (CurrentHp <= 0)
+    {
+        if (AURPMonsterCharacter* Monster = Cast<AURPMonsterCharacter>(this))
+        {
+            Monster->Die();
+        }
+        else
+        {
+            // 플레이어 죽음은 나중에 구현
+        }
+    }
 }

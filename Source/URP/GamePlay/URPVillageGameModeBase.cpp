@@ -17,7 +17,7 @@ AURPVillageGameModeBase::AURPVillageGameModeBase()
     PlayerControllerClass = AURPPlayerController::StaticClass();
 
     // 2. Default Pawn (또는 PlayerCharacter) 설정
-    DefaultPawnClass = nullptr;
+    DefaultPawnClass = AURPPlayerCharacter::StaticClass();
 
     // 3. 필요시 HUD, GameState, PlayerState 도 설정 가능
     // HUDClass = AURPHUD::StaticClass();
@@ -115,7 +115,14 @@ void AURPVillageGameModeBase::OnPawnClassLoaded(FSoftObjectPath SoftPath, APlaye
     if (!NewPawn) { UE_LOG(LogTemp, Error, TEXT("[VillageGM] Spawn failed")); return; }
     PC->Possess(NewPawn);
 
-    // TODO: 여기서 Data(레벨/스킬/인벤토리) 주입 (인터페이스/세터)
+    // Data(레벨/스킬/인벤토리) 주입 (인터페이스/세터)
+    AURPPlayerCharacter* Player = Cast<AURPPlayerCharacter>(NewPawn);
+    if (Player)
+    {
+        Player->ClassComponent->SetClass(Data.SelectedClass);
+        Player->Equipment->ApplyEquipment(Player->ClassComponent->GetClassData());
+        Player->SkillComponent->InitializeSkills(Data.SelectedClass);
+    }
     UE_LOG(LogTemp, Log, TEXT("[VillageGM] Spawned %s for %s"), *PawnClass->GetName(), *Data.PlayerId);
 }
 
@@ -145,9 +152,7 @@ void AURPVillageGameModeBase::InitializeSpawnZones()
     int32 InitialPoolSize = 30;  // 초기 풀 크기 (원하는 만큼)
     MonsterPool->InitializePool(GetWorld(), CommonMonsterClass, InitialPoolSize);
 
-    // -----------------------
     // 모든 SpawnZone에 MonsterPool 연결
-    // -----------------------
     for (auto* Zone : SpawnZones)
     {
         if (IsValid(Zone))

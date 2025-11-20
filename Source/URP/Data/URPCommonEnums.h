@@ -56,3 +56,12 @@ enum class EAIState : uint8
     Return,
     Dead
 };
+
+UENUM(BlueprintType)
+enum class EURPSkillType : uint8
+{
+    Projectile,
+    SingleHit,
+    AOE,
+    Dash
+};

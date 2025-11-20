@@ -36,14 +36,17 @@ public:
 
     const FURPPathConfig& GetPathConfig() const { return PathConfig; }
 
+    const TArray<FURPSkillRow>& GetSkillTable() const { return SkillTable; }
+
 private:
     static UURPGameDataSubsystem* Instance;
 
     FString CachedVersion;
     TArray<FGameDataPacket> GameTables;
 
-
+    TArray<FURPClassData> ClassDatas;
     TArray<FURPMonsterRow> MonsterTable;
+    TArray<FURPSkillRow> SkillTable;
     //TArray<FURPItemRow> ItemTable;
     FCharacterPresetTable PresetTable;
 
