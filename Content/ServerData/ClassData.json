@@ -1,0 +1,42 @@
+[
+  {
+    "ClassType": "Barbarian",
+    "DisplayName": "바바리안",
+    "PawnClassPath": "/Game/Blueprints/Player/BP_Barbarian.BP_Barbarian_C",
+    "AnimClassPath": "/Game/Characters/Barbarian/ABP_Barbarian.ABP_Barbarian_C",
+    "BaseMaxHp": 250,
+    "BaseAttack": 25,
+    "BaseDefense": 8,
+    "BaseMoveSpeed": 550
+  },
+  {
+    "ClassType": "Knight",
+    "DisplayName": "나이트",
+    "PawnClassPath": "/Game/Blueprints/Player/BP_Knight.BP_Knight_C",
+    "AnimClassPath": "/Game/Characters/Knight/ABP_Knight.ABP_Knight_C",
+    "BaseMaxHp": 220,
+    "BaseAttack": 15,
+    "BaseDefense": 15,
+    "BaseMoveSpeed": 520
+  },
+  {
+    "ClassType": "Mage",
+    "DisplayName": "메이지",
+    "PawnClassPath": "/Game/Blueprints/Player/BP_Mage.BP_Mage_C",
+    "AnimClassPath": "/Game/Characters/Mage/ABP_Mage.ABP_Mage_C",
+    "BaseMaxHp": 140,
+    "BaseAttack": 35,
+    "BaseDefense": 3,
+    "BaseMoveSpeed": 600
+  },
+  {
+    "ClassType": "Rogue",
+    "DisplayName": "로그",
+    "PawnClassPath": "/Game/Blueprints/Player/BP_Rogue.BP_Rogue_C",
+    "AnimClassPath": "/Game/Characters/Rogue/ABP_Rogue.ABP_Rogue_C",
+    "BaseMaxHp": 160,
+    "BaseAttack": 22,
+    "BaseDefense": 5,
+    "BaseMoveSpeed": 680
+  }
+]

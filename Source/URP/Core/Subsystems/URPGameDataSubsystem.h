@@ -38,19 +38,20 @@ public:
 
     const TArray<FURPSkillRow>& GetSkillTable() const { return SkillTable; }
 
+    const FURPClassData* GetClassData(EURPClassType ClassType);
+
 private:
     static UURPGameDataSubsystem* Instance;
 
     FString CachedVersion;
     TArray<FGameDataPacket> GameTables;
 
-    TArray<FURPClassData> ClassDatas;
     TArray<FURPMonsterRow> MonsterTable;
-    TArray<FURPSkillRow> SkillTable;
-    //TArray<FURPItemRow> ItemTable;
-    FCharacterPresetTable PresetTable;
-
     FURPPathConfig PathConfig;
+    TArray<FURPSkillRow> SkillTable;
+    TArray<FURPClassData> ClassTable;
+    //TArray<FURPItemRow> ItemTable;
+
 
     void LoadLocalFallback(); // Content/ 또는 Saved/캐시에서 읽기
 };

@@ -87,10 +87,6 @@ void UURPGameDataSubsystem::ApplyServerUpdate(const FGameDataSyncResponse& Respo
         {
             ItemTable = Packet.ItemRows;
         }*/
-        else if (Packet.TableName == TEXT("CharacterPreset"))
-        {
-            PresetTable = Packet.CharacterPresets;
-        }
         else if (Packet.TableName == TEXT("PathConfig")) 
         {
             PathConfig = Packet.PathConfigs;
@@ -101,7 +97,7 @@ void UURPGameDataSubsystem::ApplyServerUpdate(const FGameDataSyncResponse& Respo
         }
         else if (Packet.TableName == TEXT("ClassData")) 
         {
-            ClassDatas = Packet.ClassData;
+            ClassTable = Packet.ClassData;
         }
     }
 
@@ -110,9 +106,9 @@ void UURPGameDataSubsystem::ApplyServerUpdate(const FGameDataSyncResponse& Respo
 
 TOptional<FString> UURPGameDataSubsystem::GetPawnPathByClass(EURPClassType ClassType) const
 {
-    for (const auto& P : PresetTable.Presets)
+    for (const auto& P : ClassTable)
     {
-        if (P.Class == ClassType && !P.PawnClassPath.IsEmpty())
+        if (P.ClassType == ClassType && !P.PawnClassPath.IsEmpty())
             return P.PawnClassPath;
     }
     return {};
@@ -125,6 +121,18 @@ const FURPMonsterRow* UURPGameDataSubsystem::GetMonsterRow(const FString ID)
         if (MT.Name == ID) 
         {
             return &MT;
+        }
+    }
+    return nullptr;
+}
+
+const FURPClassData* UURPGameDataSubsystem::GetClassData(EURPClassType ClassType)
+{
+    for (const auto& CT : ClassTable)
+    {
+        if (CT.ClassType == ClassType)
+        {
+            return &CT;
         }
     }
     return nullptr;

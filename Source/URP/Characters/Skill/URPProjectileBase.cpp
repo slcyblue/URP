@@ -1,26 +1,17 @@
-#include "URPAOEBase.h"
+#include "URPProjectileBase.h"
 #include "Characters/URPMonsterCharacter.h"
 
-void UURPAOEBase::Execute(AURPPlayerCharacter* Owner)
+void UURPProjectileBase::Execute(AURPPlayerCharacter* Owner)
 {
     if (!Owner || !Owner->HasAuthority()) return;
 
-    TArray<FHitResult> Hits;
-    FVector Center = Owner->GetActorLocation();
+    FVector Loc = Owner->GetActorLocation() + Owner->GetActorRotation().RotateVector(SpawnOffset);
+    FRotator Rot = Owner->GetActorRotation();
 
-    bool bHit = Owner->GetWorld()->SweepMultiByChannel(
-        Hits, Center, Center,
-        FQuat::Identity, ECC_Pawn,
-        FCollisionShape::MakeSphere(Radius));
+    FActorSpawnParameters Params;
+    Params.Owner = Owner;
 
-    if (!bHit) return;
+    AActor* Proj = Owner->GetWorld()->SpawnActor<AActor>(ProjectileClass, Loc, Rot, Params);
 
-    for (auto& Hit : Hits)
-    {
-        if (auto* Monster = Cast<AURPMonsterCharacter>(Hit.GetActor()))
-        {
-            float Damage = Owner->AttackPower * DamageMultiplier;
-            Monster->ApplyDamage(Damage);
-        }
-    }
+    // Projectile 안에서 OnHit 시 Monster->ApplyDamage(Owner->AttackPower * DamageMultiplier);
 }

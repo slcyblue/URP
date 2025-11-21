@@ -48,3 +48,17 @@ void AURPCharacterBase::ApplyDamage(float Amount)
         }
     }
 }
+
+void AURPCharacterBase::RecalculateStats()
+{
+    MaxHp = BaseMaxHp + EquipMaxHp;
+    AttackPower = BaseAttack + EquipAttack;
+    DefensePower = BaseDefense + EquipDefense;
+
+    // HP가 넘어지지 않도록 보정
+    if (CurrentHp > MaxHp)
+        CurrentHp = MaxHp;
+
+    UE_LOG(LogTemp, Log, TEXT("[Recalc Stat] MaxHp=%lld, Attack=%.1f, Def=%.1f"),
+        MaxHp, AttackPower, DefensePower);
+}

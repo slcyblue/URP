@@ -55,9 +55,14 @@ void UURPPlayerClassComponent::ApplyClassToCharacter()
     if (ClassData->AnimClass)
         PC->GetMesh()->SetAnimInstanceClass(ClassData->AnimClass);
 
-    // PlayerCharacter 스탯 갱신
-    PC->AttackPower = ClassData->BaseAttack;
-    PC->MaxHp += ClassData->BaseDefense;
+    // === 클래스 기본 스탯 적용 ===
+    PC->BaseMaxHp = ClassData->BaseMaxHp;
+    PC->BaseAttack = ClassData->BaseAttack;
+    PC->BaseDefense = ClassData->BaseDefense;
 
-    UE_LOG(LogTemp, Log, TEXT("Class applied: Attack=%.1f"), ClassData->BaseAttack);
+    // 스탯 재계산
+    PC->RecalculateStats();
+
+    UE_LOG(LogTemp, Log, TEXT("[Class] Stats updated: MaxHp=%lld, Attack=%.1f"),
+        PC->MaxHp, PC->AttackPower);
 }

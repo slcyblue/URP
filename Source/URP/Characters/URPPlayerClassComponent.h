@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Data/URPPlayerData.h"
+#include "Data/URPGameData.h"
 #include "URPPlayerClassComponent.generated.h"
 
 UCLASS()
@@ -17,7 +17,7 @@ public:
 
     void SetClass(EURPClassType NewClass);
 
-    FURPClassData* GetClassData() const { return ClassData; }
+    const FURPClassData* GetClassData() { return ClassData; }
 
 protected:
     virtual void BeginPlay() override;
@@ -28,7 +28,7 @@ private:
     EURPClassType CurrentClass = EURPClassType::None;
 
     /** DataTable에서 불러온 직업 데이터 */
-    FURPClassData* ClassData = nullptr;
+    const FURPClassData* ClassData = nullptr;
 
     void ApplyClassToCharacter();
 };

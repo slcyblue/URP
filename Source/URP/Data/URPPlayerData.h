@@ -92,33 +92,3 @@ struct URP_API FPlayerDataResponse
     {
     }
 };
-
-USTRUCT(BlueprintType)
-struct URP_API FURPClassData
-{
-    GENERATED_BODY();
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<UAnimInstance> AnimClass;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float BaseAttack = 10.f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float BaseDefense = 0.f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float AttackSpeed = 1.f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<AActor> MainWeapon;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<AActor> OffHandItem;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    bool bUseShield = false;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    EURPClassType ClassType = EURPClassType::None;
-};

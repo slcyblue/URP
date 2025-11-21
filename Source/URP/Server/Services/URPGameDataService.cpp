@@ -36,9 +36,9 @@ bool UURPGameDataService::BuildSyncResponse(const FGameDataSyncRequest& Req, FGa
     // 로드할 Json 테이블 이름 추가
     TArray<FString> Tables = {
         TEXT("MonsterTable"),
-        TEXT("CharacterPreset"),
         TEXT("PathConfig"),
-        TEXT("SkillData")
+        TEXT("SkillTable"),
+        TEXT("ClassData"),
     };
 
     // 패킷 생성

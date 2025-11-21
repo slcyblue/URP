@@ -64,34 +64,32 @@ struct FURPPathConfig
 
 
 USTRUCT(BlueprintType)
-struct FCharacterPreset
-{
-    GENERATED_BODY()
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    EURPClassType Class = EURPClassType::None;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString PawnClassPath;
-};
-
-USTRUCT(BlueprintType)
-struct FCharacterPresetTable
-{
-    GENERATED_BODY()
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FCharacterPreset> Presets;
-};
-
-
-USTRUCT(BlueprintType)
 struct FURPClassData
 {
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    EURPClassType Class = EURPClassType::None;
+    EURPClassType ClassType = EURPClassType::None;
+
+    // 기존 값
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<UAnimInstance> AnimClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString PawnClassPath;
+
+    // === 클래스 기본 스탯 ===
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int64 BaseMaxHp = 100;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float BaseAttack = 10.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float BaseDefense = 5.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float BaseMoveSpeed = 600.f;
 };
 
 USTRUCT(BlueprintType)
@@ -114,9 +112,6 @@ struct URP_API FGameDataPacket
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<FURPQuestRow> QuestRows;*/
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FCharacterPresetTable CharacterPresets;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<FURPSkillRow> SkillDatas;

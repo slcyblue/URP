@@ -21,21 +21,45 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-    /** 캐릭터 타입 (플레이어 클래스 타입 / 몬스터 타입 등) */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "URP|Character")
-    EURPClassType ClassType = EURPClassType::None;
+    // 기본 스탯(클래스에 의해 결정)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+    int64 BaseMaxHp = 100;
 
-    // 공통 스탯
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+    float BaseAttack = 10.f;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+    float BaseDefense = 5.f;
+
+
+    // 장비 스탯(EquipmentComponent가 제공)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+    int64 EquipMaxHp = 0;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+    float EquipAttack = 0.f;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+    float EquipDefense = 0.f;
+
+
+    // 최종 스탯 (Base + Equip + Buff 등)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
     int64 MaxHp = 100;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+    float AttackPower = 10.f;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+    float DefensePower = 5.f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
     int64 CurrentHp = 100;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
-    float AttackPower = 10.f;
-
     // 공통 행동
     virtual void ApplyDamage(float Amount);
+
+    UFUNCTION(BlueprintCallable)
+    virtual void RecalculateStats();
 
 };

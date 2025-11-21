@@ -28,16 +28,16 @@ void UURPPlayerEquipmentComponent::ApplyEquipment(const FURPClassData* ClassData
         OffHandActor->Destroy();
 
     // 메인 무기
-    if (ClassData->MainWeapon)
-    {
-        EquipWeapon(ClassData->MainWeapon, "hand_r");
-    }
+    //if (ClassData->MainWeapon)
+    //{
+    //    EquipWeapon(ClassData->MainWeapon, "hand_r");
+    //}
 
-    // 보조 무기(방패/보조무기)
-    if (ClassData->bUseShield && ClassData->OffHandItem)
-    {
-        EquipWeapon(ClassData->OffHandItem, "hand_l");
-    }
+    //// 보조 무기(방패/보조무기)
+    //if (ClassData->bUseShield && ClassData->OffHandItem)
+    //{
+    //    EquipWeapon(ClassData->OffHandItem, "hand_l");
+    //}
 }
 
 void UURPPlayerEquipmentComponent::EquipWeapon(TSubclassOf<AActor> WeaponClass, FName SocketName)

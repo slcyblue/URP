@@ -1,9 +1,9 @@
-{
-  "Knight_ShieldBash": {
+[
+  {
     "SkillId": 1001,
     "SkillName": "Shield Bash",
-    "RequiredClass": "EURPClassType::Knight",
-    "SkillType": "EURPSkillType::SingleHit",
+    "RequiredClass": "Knight",
+    "SkillType": "SingleHit",
     "SkillClass": "/Script/URP.URPSkillSingleHitBase",
     "Cooldown": 5.0,
     "DamageMultiplier": 1.4,
@@ -14,12 +14,12 @@
     "ProjectileClass": "",
     "SpawnOffset": { "X": 0, "Y": 0, "Z": 0 }
   },
-
-  "Knight_HolyStrike": {
+  
+  {
     "SkillId": 1002,
     "SkillName": "Holy Strike",
-    "RequiredClass": "EURPClassType::Knight",
-    "SkillType": "EURPSkillType::AOE",
+    "RequiredClass": "Knight",
+    "SkillType": "AOE",
     "SkillClass": "/Script/URP.URPSkillAOEBase",
     "Cooldown": 8.0,
     "DamageMultiplier": 1.2,
@@ -31,11 +31,11 @@
     "SpawnOffset": { "X": 0, "Y": 0, "Z": 0 }
   },
 
-  "Mage_Fireball": {
+  {
     "SkillId": 2001,
     "SkillName": "Fireball",
-    "RequiredClass": "EURPClassType::Mage",
-    "SkillType": "EURPSkillType::Projectile",
+    "RequiredClass": "Mage",
+    "SkillType": "Projectile",
     "SkillClass": "/Script/URP.URPSkillProjectileBase",
     "Cooldown": 3.0,
     "DamageMultiplier": 1.0,
@@ -43,15 +43,15 @@
     "Radius": 0.0,
     "DashDistance": 0.0,
     "HitRadius": 0.0,
-    "ProjectileClass": "/Game/Skills/Proj/BP_FireballProjectile.BP_FireballProjectile_C",
+    "ProjectileClass": "/Game/Skills/Projectile/BP_FireballProjectile.BP_FireballProjectile_C",
     "SpawnOffset": { "X": 30, "Y": 0, "Z": 50 }
   },
 
-  "Mage_IceNova": {
+  {
     "SkillId": 2002,
     "SkillName": "Ice Nova",
-    "RequiredClass": "EURPClassType::Mage",
-    "SkillType": "EURPSkillType::AOE",
+    "RequiredClass": "Mage",
+    "SkillType": "AOE",
     "SkillClass": "/Script/URP.URPSkillAOEBase",
     "Cooldown": 10.0,
     "DamageMultiplier": 1.1,
@@ -63,11 +63,11 @@
     "SpawnOffset": { "X": 0, "Y": 0, "Z": 0 }
   },
 
-  "Rogue_Backstab": {
+  {
     "SkillId": 3001,
     "SkillName": "Backstab",
-    "RequiredClass": "EURPClassType::Rogue",
-    "SkillType": "EURPSkillType::SingleHit",
+    "RequiredClass": "Rogue",
+    "SkillType": "SingleHit",
     "SkillClass": "/Script/URP.URPSkillSingleHitBase",
     "Cooldown": 6.0,
     "DamageMultiplier": 3.0,
@@ -79,11 +79,11 @@
     "SpawnOffset": { "X": 0, "Y": 0, "Z": 0 }
   },
 
-  "Rogue_DashCut": {
+  {
     "SkillId": 3002,
     "SkillName": "Dash Cut",
-    "RequiredClass": "EURPClassType::Rogue",
-    "SkillType": "EURPSkillType::Dash",
+    "RequiredClass": "Rogue",
+    "SkillType": "Dash",
     "SkillClass": "/Script/URP.URPSkillDashBase",
     "Cooldown": 7.0,
     "DamageMultiplier": 1.5,
@@ -95,11 +95,11 @@
     "SpawnOffset": { "X": 0, "Y": 0, "Z": 0 }
   },
 
-  "Barb_Whirlwind": {
+  {
     "SkillId": 4001,
     "SkillName": "Whirlwind",
-    "RequiredClass": "EURPClassType::Barbarian",
-    "SkillType": "EURPSkillType::AOE",
+    "RequiredClass": "Barbarian",
+    "SkillType": "AOE",
     "SkillClass": "/Script/URP.URPSkillAOEBase",
     "Cooldown": 12.0,
     "DamageMultiplier": 0.8,
@@ -111,11 +111,11 @@
     "SpawnOffset": { "X": 0, "Y": 0, "Z": 0 }
   },
 
-  "Barb_GroundSlam": {
+  {
     "SkillId": 4002,
     "SkillName": "Ground Slam",
-    "RequiredClass": "EURPClassType::Barbarian",
-    "SkillType": "EURPSkillType::AOE",
+    "RequiredClass": "Barbarian",
+    "SkillType": "AOE",
     "SkillClass": "/Script/URP.URPSkillAOEBase",
     "Cooldown": 10.0,
     "DamageMultiplier": 1.3,
@@ -126,4 +126,4 @@
     "ProjectileClass": "",
     "SpawnOffset": { "X": 0, "Y": 0, "Z": 0 }
   }
-}
+]
