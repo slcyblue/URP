@@ -9,11 +9,19 @@ class URP_API UURPAOEBase : public UURPSkillBase
     GENERATED_BODY()
 
 public:
-    UPROPERTY(EditAnywhere)
-    float Radius = 300.f;
+    float Radius = 0.f;
+    float DamageMultiplier = 1.f;
+    float TickInterval = 0.25f;
+    int32 MaxTicks = 1;
+    float Delay = 0.f;
 
-    UPROPERTY(EditAnywhere)
-    float DamageMultiplier = 1.0f;
+    int32 CurrentTick = 0;
+    FTimerHandle TickHandle;
+    FTimerHandle DelayHandle;
 
     virtual void Execute(AURPPlayerCharacter* Owner) override;
+    
+    virtual void DoAOETick();
+    
+    void StartTick();
 };

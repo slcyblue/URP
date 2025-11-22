@@ -17,7 +17,6 @@ AURPPlayerCharacter::AURPPlayerCharacter()
     CameraBoom->bInheritPitch = false;
     CameraBoom->bInheritYaw = false;
     CameraBoom->bInheritRoll = false;
-    CameraBoom->bDoCollisionTest = true;
     CameraBoom->ProbeSize = 8.f;
 
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -32,14 +31,21 @@ AURPPlayerCharacter::AURPPlayerCharacter()
     AIControllerClass = AAIController::StaticClass();
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
+    CameraManager = CreateDefaultSubobject<UURPCameraManager>(TEXT("CameraManager"));
     Combat = CreateDefaultSubobject<UURPPlayerCombatComponent>("Combat");
     ClassComponent = CreateDefaultSubobject<UURPPlayerClassComponent>("Class");
     Equipment = CreateDefaultSubobject<UURPPlayerEquipmentComponent>("Equip");
+    SkillComponent = CreateDefaultSubobject<UURPPlayerSkillComponent>("Skill");
 }
 
 void AURPPlayerCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    if (CameraManager)
+    {
+        CameraManager->InitializeCamera(CameraBoom, FollowCamera);
+    }
 
     Anim = Cast<UURPPlayerAnimInstance>(GetMesh()->GetAnimInstance());
     UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] %s BeginPlay"), *GetName());
@@ -49,7 +55,6 @@ void AURPPlayerCharacter::BeginPlay()
 void AURPPlayerCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    UpdateCameraTransparency(DeltaSeconds);
 
     if (Anim)
     {
@@ -64,22 +69,6 @@ void AURPPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-
-void AURPPlayerCharacter::UpdateCameraTransparency(float DeltaTime)
-{
-    // 충돌 여부에 따라 카메라 거리 조정
-    float DesiredLength = 800.f;
-    if (CameraBoom->bDoCollisionTest && CameraBoom->IsCollisionFixApplied())
-    {
-        DesiredLength = FMath::Lerp(CameraBoom->TargetArmLength, 400.f, DeltaTime * 5.f);
-    }
-    else
-    {
-        DesiredLength = FMath::Lerp(CameraBoom->TargetArmLength, 800.f, DeltaTime * 2.f);
-    }
-    CameraBoom->TargetArmLength = DesiredLength;
-}
-
 
 void AURPPlayerCharacter::PlayAttack()
 {

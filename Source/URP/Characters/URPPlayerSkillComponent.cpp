@@ -49,17 +49,7 @@ void UURPPlayerSkillComponent::InitializeSkills(EURPClassType ClassType)
         if (Row.RequiredClass != ClassType)
             continue;
 
-        if (!Row.SkillClass)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Skill Row %s has no SkillClass"), *Row.SkillName);
-            continue;
-        }
-
-        UURPSkillBase* Skill = NewObject<UURPSkillBase>(this, Row.SkillClass);
-        if (!Skill) continue;
-
-        Skill->SkillId = Row.SkillId;
-        Skill->Cooldown = Row.Cooldown;
+        UURPSkillBase* Skill = nullptr;
 
         // 유형별 세팅
         switch (Row.SkillType)
@@ -100,6 +90,12 @@ void UURPPlayerSkillComponent::InitializeSkills(EURPClassType ClassType)
             break;
         }
 
+        if (!Skill)
+            continue;
+
+        Skill->SkillId = Row.SkillId;
+        Skill->Cooldown = Row.Cooldown;
+
         RegisterSkill(Skill->SkillId, Skill);
 
         UE_LOG(LogTemp, Log, TEXT("Loaded Skill from GameDataSubsystem: %s (Id=%d)"), *Row.SkillName, Row.SkillId);
@@ -122,20 +118,21 @@ UURPSkillBase* UURPPlayerSkillComponent::GetSkill(int32 SkillId) const
     return nullptr;
 }
 
-void UURPPlayerSkillComponent::ExecuteSkill(int32 SkillId)
+void UURPPlayerSkillComponent::ExecuteSkill(int32 SkillId, float AdjustTime)
 {
-    UURPSkillBase* Skill = GetSkill(SkillId);
-    if (!Skill) return;
+    UURPSkillBase* Skill = SkillMap.FindRef(SkillId);
+    if (!Skill) 
+        return;
 
     AURPPlayerCharacter* Owner = Cast<AURPPlayerCharacter>(GetOwner());
-    if (!Owner || !Owner->HasAuthority()) return;
+    if (!Owner) return;
 
-    float ServerTime = Owner->GetWorld()->GetTimeSeconds();
-    if (!Skill->IsReady(ServerTime))
+    // 쿨다운 체크 → Time 기준
+    if (!Skill->IsReady(AdjustTime))
         return;
 
     Skill->Execute(Owner);
-    Skill->StartCooldown(ServerTime);
+    Skill->StartCooldown(AdjustTime);
 }
 
 float UURPPlayerSkillComponent::GetRemainingCooldown(int32 SkillId) const

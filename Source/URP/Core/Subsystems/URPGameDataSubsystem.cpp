@@ -6,6 +6,7 @@
 #include "Data/URPGameData.h"
 #include "Core/Subsystems/URPNetworkSubsystem.h"
 #include "Network/GameDataRPCHandler.h"
+#include "Characters/Skill/URPSkillBase.h"
 
 void UURPGameDataSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -14,6 +15,33 @@ void UURPGameDataSubsystem::Initialize(FSubsystemCollectionBase& Collection)
     UE_LOG(LogTemp, Log, TEXT("[GameDataManager] Subsystem Initialized"));
 
     Collection.InitializeDependency<UURPNetworkSubsystem>();
+
+    // 테이블 이름 -> 로더 함수 매핑
+    TableLoaders.Add(TEXT("MonsterTable"),
+        [this](const FGameDataPacket& Packet)
+        {
+            LoadMonsterTable(Packet);
+        });
+
+    TableLoaders.Add(TEXT("PathConfig"),
+        [this](const FGameDataPacket& Packet)
+        {
+            LoadPathConfig(Packet);
+        });
+
+    TableLoaders.Add(TEXT("SkillData"),
+        [this](const FGameDataPacket& Packet)
+        {
+            LoadSkillData(Packet);
+        });
+
+    TableLoaders.Add(TEXT("ClassData"),
+        [this](const FGameDataPacket& Packet)
+        {
+            LoadClassData(Packet);
+        });
+
+    UE_LOG(LogTemp, Log, TEXT("[GameDataSubsystem] Initialize: TableLoaders registered."));
 
     LoadLocalFallback();
 
@@ -79,29 +107,81 @@ void UURPGameDataSubsystem::ApplyServerUpdate(const FGameDataSyncResponse& Respo
 
     for (const FGameDataPacket& Packet : Response.UpdatedTables)
     {
-        if (Packet.TableName == TEXT("MonsterTable"))
+        if (TFunction<void(const FGameDataPacket&)>* Loader = TableLoaders.Find(Packet.TableName))
         {
-            MonsterTable = Packet.MonsterRows;
+            // 등록된 로더 호출
+            (*Loader)(Packet);
         }
-        /*else if (Packet.TableName == TEXT("ItemTable"))
+        else
         {
-            ItemTable = Packet.ItemRows;
-        }*/
-        else if (Packet.TableName == TEXT("PathConfig")) 
-        {
-            PathConfig = Packet.PathConfigs;
-        }
-        else if (Packet.TableName == TEXT("SkillData")) 
-        {
-            SkillTable = Packet.SkillDatas;
-        }
-        else if (Packet.TableName == TEXT("ClassData")) 
-        {
-            ClassTable = Packet.ClassData;
+            UE_LOG(LogTemp, Warning, TEXT("[GameDataSubsystem] Unknown table name: %s"), *Packet.TableName);
         }
     }
 
     UE_LOG(LogTemp, Log, TEXT("[GameDataManager] Updated to version %s with %d tables."), *Response.NewVersion, Response.UpdatedTables.Num());
+}
+
+void UURPGameDataSubsystem::LoadMonsterTable(const FGameDataPacket& Packet)
+{
+    MonsterTable = Packet.MonsterRows;
+    UE_LOG(LogTemp, Log, TEXT("[GameDataSubsystem] MonsterTable loaded: %d rows"), MonsterTable.Num());
+}
+
+void UURPGameDataSubsystem::LoadPathConfig(const FGameDataPacket& Packet)
+{
+    PathConfig = Packet.PathConfigs;
+    UE_LOG(LogTemp, Log, TEXT("[GameDataSubsystem] PathConfig loaded"));
+}
+
+void UURPGameDataSubsystem::LoadSkillData(const FGameDataPacket& Packet)
+{
+    SkillTable = Packet.SkillDatas;
+
+    // 여기서 SkillClassPath -> SkillClass 로딩 + 로그
+    for (FURPSkillRow& Row : SkillTable)
+    {
+        if (!Row.ProjectileClassPath.IsEmpty())
+        {
+            UClass* ProjectileBP = LoadClass<AActor>(nullptr, *Row.ProjectileClassPath);
+            if (!ProjectileBP)
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to load ProjectileClass (%s) : %s"),
+                    *Row.SkillName,
+                    *Row.ProjectileClassPath);
+            }
+            else
+            {
+                Row.ProjectileClass = ProjectileBP;
+            }
+        }
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("[GameDataSubsystem] SkillData loaded: %d rows"), SkillTable.Num());
+}
+
+void UURPGameDataSubsystem::LoadClassData(const FGameDataPacket& Packet)
+{
+     ClassTable = Packet.ClassData;
+
+    for (FURPClassData& Row : ClassTable)
+    {
+        // 필요하다면 여기서 AnimClassPath -> AnimClass 로딩 (네가 Struct에 AnimClassPath를 넣었다는 가정)
+        if (!Row.AnimClass && !Row.AnimClassPath.IsEmpty())
+        {
+            UClass* AnimBPClass = LoadClass<UAnimInstance>(nullptr, *Row.AnimClassPath);
+            if (!AnimBPClass)
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to load AnimClass for Class %d : %s"),
+                    static_cast<int32>(Row.ClassType), *Row.AnimClassPath);
+            }
+            else
+            {
+                Row.AnimClass = AnimBPClass;
+            }
+        }
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("[GameDataSubsystem] ClassData loaded: %d rows"), ClassTable.Num());
 }
 
 TOptional<FString> UURPGameDataSubsystem::GetPawnPathByClass(EURPClassType ClassType) const

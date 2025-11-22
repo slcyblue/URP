@@ -1,31 +1,28 @@
 #include "URPDashBase.h"
 #include "Characters/URPMonsterCharacter.h"
+#include <Kismet/KismetSystemLibrary.h>
 
 void UURPDashBase::Execute(AURPPlayerCharacter* Owner)
 {
-    if (!Owner || !Owner->HasAuthority()) return;
+    OwnerPC = Owner;
 
-    // 1) 대시 이동
-    FVector NewLoc = Owner->GetActorLocation() +
-        Owner->GetActorForwardVector() * DashDistance;
-
-    Owner->SetActorLocation(NewLoc, true);
-
-    // 2) 전진 경로에서 히트 체크
-    TArray<FHitResult> Hits;
     FVector Start = Owner->GetActorLocation();
-    FVector End = Start + Owner->GetActorForwardVector() * 200.f;
+    FVector End = Start + Owner->GetActorForwardVector() * DashDistance;
 
+    Owner->SetActorLocation(End, true);
+
+    TArray<FHitResult> Hits;
     Owner->GetWorld()->SweepMultiByChannel(
         Hits, Start, End, FQuat::Identity, ECC_Pawn,
-        FCollisionShape::MakeSphere(HitRadius));
+        FCollisionShape::MakeSphere(HitRadius)
+    );
 
     for (auto& Hit : Hits)
     {
-        if (auto* Monster = Cast<AURPMonsterCharacter>(Hit.GetActor()))
+        if (AURPCharacterBase* Target = Cast<AURPCharacterBase>(Hit.GetActor()))
         {
-            float Damage = Owner->AttackPower * DamageMultiplier;
-            Monster->ApplyDamage(Damage);
+            float Damage = GetDamage(Owner) * DamageMultiplier;
+            Target->ApplyDamage(Damage);
         }
     }
 }

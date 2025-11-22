@@ -54,4 +54,13 @@ private:
 
 
     void LoadLocalFallback(); // Content/ 또는 Saved/캐시에서 읽기
+
+    /** 테이블 이름 -> 로딩 함수 */
+    TMap<FString, TFunction<void(const FGameDataPacket&)>> TableLoaders;
+
+    // 각 테이블별 로딩 함수
+    void LoadMonsterTable(const FGameDataPacket& Packet);
+    void LoadPathConfig(const FGameDataPacket& Packet);
+    void LoadSkillData(const FGameDataPacket& Packet);
+    void LoadClassData(const FGameDataPacket& Packet);
 };

@@ -6,6 +6,7 @@
 #include "URPPlayerCombatComponent.h"
 #include "URPPlayerEquipmentComponent.h"
 #include "URPPlayerSkillComponent.h"
+#include "GamePlay/URPCameraManager.h"
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
 #include "Animations/URPPlayerAnimInstance.h"
@@ -36,6 +37,9 @@ public:
     UPROPERTY(VisibleAnywhere)
     UURPPlayerSkillComponent* SkillComponent;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+    UURPCameraManager* CameraManager;
+
     void PlayAttack();
     void PlaySkill();
 
@@ -52,7 +56,7 @@ private:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
     UCameraComponent* FollowCamera;
-
+        
     void UpdateCameraTransparency(float DeltaTime);
 
     UURPPlayerAnimInstance* Anim;

@@ -22,7 +22,7 @@ public:
     void ServerAttack();
 
     UFUNCTION(Server, Reliable)
-    void ServerSkill(int32 SkillId);
+    void ServerSkill(int32 SkillId, float ClientTime);
 
     void Skill(int32 SkillId);
 

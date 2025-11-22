@@ -8,15 +8,12 @@ class URP_API UURPProjectileBase : public UURPSkillBase
 {
     GENERATED_BODY()
 
+
 public:
-    UPROPERTY(EditAnywhere)
     TSubclassOf<AActor> ProjectileClass;
-
-    UPROPERTY(EditAnywhere)
-    FVector SpawnOffset = FVector(30, 0, 50);
-
-    UPROPERTY(EditAnywhere)
-    float DamageMultiplier = 1.0f;
+    float DamageMultiplier = 1.f;
+    float Range = 0.f;
+    FVector SpawnOffset;
 
     virtual void Execute(AURPPlayerCharacter* Owner) override;
 };

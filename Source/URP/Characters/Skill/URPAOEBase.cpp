@@ -1,26 +1,58 @@
 #include "URPAOEBase.h"
 #include "Characters/URPMonsterCharacter.h"
+#include <Kismet/KismetSystemLibrary.h>
 
 void UURPAOEBase::Execute(AURPPlayerCharacter* Owner)
 {
-    if (!Owner || !Owner->HasAuthority()) return;
+    OwnerPC = Owner;
+    CurrentTick = 0;
 
-    TArray<FHitResult> Hits;
-    FVector Center = Owner->GetActorLocation();
-
-    bool bHit = Owner->GetWorld()->SweepMultiByChannel(
-        Hits, Center, Center,
-        FQuat::Identity, ECC_Pawn,
-        FCollisionShape::MakeSphere(Radius));
-
-    if (!bHit) return;
-
-    for (auto& Hit : Hits)
+    if (Delay > 0.f)
     {
-        if (auto* Monster = Cast<AURPMonsterCharacter>(Hit.GetActor()))
+        Owner->GetWorldTimerManager().SetTimer(
+            TickHandle, this, &UURPAOEBase::StartTick, Delay, false);
+    }
+    else
+    {
+        StartTick();
+    }
+}
+
+void UURPAOEBase::StartTick()
+{
+    OwnerPC->GetWorldTimerManager().SetTimer(
+        TickHandle, this, &UURPAOEBase::DoAOETick, TickInterval, true);
+}
+
+void UURPAOEBase::DoAOETick()
+{
+    CurrentTick++;
+    if (CurrentTick > MaxTicks)
+    {
+        OwnerPC->GetWorldTimerManager().ClearTimer(TickHandle);
+        return;
+    }
+
+    FVector Center = OwnerPC->GetActorLocation();
+
+    TArray<AActor*> Hits;
+    UKismetSystemLibrary::SphereOverlapActors(
+        OwnerPC->GetWorld(),
+        Center,
+        Radius,
+        { UEngineTypes::ConvertToObjectType(ECC_Pawn) },
+        AURPCharacterBase::StaticClass(),
+        { OwnerPC },
+        Hits
+    );
+
+    for (AActor* Hit : Hits)
+    {
+        AURPCharacterBase* Target = Cast<AURPCharacterBase>(Hit);
+        if (Target)
         {
-            float Damage = Owner->AttackPower * DamageMultiplier;
-            Monster->ApplyDamage(Damage);
+            float Dmg = GetDamage(OwnerPC) * DamageMultiplier;
+            Target->ApplyDamage(Dmg);
         }
     }
 }

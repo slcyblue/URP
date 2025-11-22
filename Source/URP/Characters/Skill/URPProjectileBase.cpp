@@ -3,15 +3,13 @@
 
 void UURPProjectileBase::Execute(AURPPlayerCharacter* Owner)
 {
-    if (!Owner || !Owner->HasAuthority()) return;
+    OwnerPC = Owner;
+    if (!ProjectileClass) return;
 
-    FVector Loc = Owner->GetActorLocation() + Owner->GetActorRotation().RotateVector(SpawnOffset);
+    FVector Loc = Owner->GetActorLocation() + SpawnOffset;
     FRotator Rot = Owner->GetActorRotation();
 
-    FActorSpawnParameters Params;
-    Params.Owner = Owner;
-
-    AActor* Proj = Owner->GetWorld()->SpawnActor<AActor>(ProjectileClass, Loc, Rot, Params);
+    Owner->GetWorld()->SpawnActor<AActor>(ProjectileClass, Loc, Rot);
 
     // Projectile 안에서 OnHit 시 Monster->ApplyDamage(Owner->AttackPower * DamageMultiplier);
 }

@@ -24,10 +24,6 @@ struct URP_API FURPSkillRow
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     EURPSkillType SkillType = EURPSkillType::SingleHit;
 
-    /** 사용될 SkillBase 클래스 (ProjectileBase / AOEBase / SingleHitBase / DashBase 등) */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSubclassOf<class UURPSkillBase> SkillClass;
-
     /** 쿨다운(초) */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float Cooldown = 3.f;
@@ -51,6 +47,10 @@ struct URP_API FURPSkillRow
     /** Dash 중 히트 범위 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float HitRadius = 60.f;
+
+    /** Projectile용 투사체 클래스 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FString ProjectileClassPath;
 
     /** Projectile용 투사체 클래스 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)

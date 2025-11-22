@@ -60,8 +60,9 @@ enum class EAIState : uint8
 UENUM(BlueprintType)
 enum class EURPSkillType : uint8
 {
-    Projectile,
-    SingleHit,
-    AOE,
-    Dash
+    None        UMETA(DisplayName = "None"),
+    SingleHit   UMETA(DisplayName = "SingleHit"),
+    AOE         UMETA(DisplayName = "AOE"),
+    Projectile  UMETA(DisplayName = "Projectile"),
+    Dash        UMETA(DisplayName = "Dash"),
 };

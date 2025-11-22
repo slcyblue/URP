@@ -18,7 +18,7 @@ public:
     void InitializeSkills(EURPClassType ClassType);
 
     /** SkillId 기반으로 스킬 실행 */
-    void ExecuteSkill(int32 SkillId);
+    void ExecuteSkill(int32 SkillId, float AdjustTime);
 
     /** 스킬 등록 */
     void RegisterSkill(int32 SkillId, UURPSkillBase* Skill);

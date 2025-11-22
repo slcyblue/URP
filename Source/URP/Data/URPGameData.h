@@ -71,12 +71,14 @@ struct FURPClassData
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EURPClassType ClassType = EURPClassType::None;
 
-    // 기존 값
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<UAnimInstance> AnimClass;
+    FString AnimClassPath;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString PawnClassPath;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<UAnimInstance> AnimClass;
 
     // === 클래스 기본 스탯 ===
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

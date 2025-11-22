@@ -83,14 +83,23 @@ float UURPPlayerCombatComponent::GetFinalDamage() const
 void UURPPlayerCombatComponent::Skill(int32 SkillId)
 {
     // 로컬 플레이어 → 서버 호출
-    if (OwnerPC && OwnerPC->IsLocallyControlled())
-        ServerSkill(SkillId);
+    if (OwnerPC && OwnerPC->IsLocallyControlled()) {
+        float ClientTime = GetWorld()->GetTimeSeconds();
+        ServerSkill(SkillId, ClientTime);
+    }
 
     OwnerPC->PlaySkill(); // 애니메이션은 로컬
 }
 
-void UURPPlayerCombatComponent::ServerSkill_Implementation(int32 SkillId)
+void UURPPlayerCombatComponent::ServerSkill_Implementation(int32 SkillId, float ClientTime)
 {
-    if (SkillComp)
-        SkillComp->ExecuteSkill(SkillId);
+    if (!SkillComp) return;
+
+    const float ServerNow = GetWorld()->GetTimeSeconds();
+    const float RTT = ServerNow - ClientTime;
+
+    // 보정된 서버 기준 스킬 사용 시간
+    float AdjustedServerTime = ServerNow - (RTT * 0.5f);
+
+    SkillComp->ExecuteSkill(SkillId, AdjustedServerTime);
 }
