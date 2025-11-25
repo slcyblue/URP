@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Server/Core/URPServerServiceBase.h"
 #include "Server/Storage/URPJsonStorage.h"
-#include "Data/URPLoginData.h"
+#include "Types/URPLoginTypes.h"
 #include "UObject/NoExportTypes.h"
 #include "URPAccountService.generated.h"
 

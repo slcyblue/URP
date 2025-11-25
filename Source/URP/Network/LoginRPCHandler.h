@@ -2,8 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "Data/URPLoginData.h"
-#include "Data/URPPlayerData.h"
+#include "Types/URPLoginTypes.h"
+#include "Types/URPPlayerTypes.h"
 #include "BaseRPCHandler.h"
 #include "LoginRPCHandler.generated.h"
 

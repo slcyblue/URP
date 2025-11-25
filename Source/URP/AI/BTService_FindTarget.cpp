@@ -1,7 +1,7 @@
 #include "BTService_FindTarget.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
-#include "Characters/URPMonsterCharacter.h"
+#include "Characters/Monster/URPMonsterCharacter.h"
 
 UBTService_FindTarget::UBTService_FindTarget()
 {

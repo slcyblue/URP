@@ -1,0 +1,69 @@
+  [
+    {
+      "SkillId": 9101,
+      "SkillName": "Weakening Roar",
+      "RequiredClass": "Barbarian",
+      "SkillType": "Debuff",
+      "Duration": 6.0,
+      "AttackDecrease": 20.0
+    },
+    {
+      "SkillId": 9102,
+      "SkillName": "Armor Break",
+      "RequiredClass": "Barbarian",
+      "SkillType": "Debuff",
+      "Duration": 6.0,
+      "DefenseDecrease": 15.0
+    },
+
+    {
+      "SkillId": 9103,
+      "SkillName": "Judgement Seal",
+      "RequiredClass": "Knight",
+      "SkillType": "Debuff",
+      "Duration": 8.0,
+      "CustomFlag": "Seal"
+    },
+    {
+      "SkillId": 9104,
+      "SkillName": "Holy Shackles",
+      "RequiredClass": "Knight",
+      "SkillType": "Debuff",
+      "Duration": 5.0,
+      "DefenseDecrease": 10.0
+    },
+
+    {
+      "SkillId": 9105,
+      "SkillName": "Arcane Slow",
+      "RequiredClass": "Mage",
+      "SkillType": "Debuff",
+      "Duration": 4.0,
+      "MoveSpeedDecrease": 80.0
+    },
+    {
+      "SkillId": 9106,
+      "SkillName": "Magic Weakness",
+      "RequiredClass": "Mage",
+      "SkillType": "Debuff",
+      "Duration": 6.0,
+      "DefenseDecrease": 12.0
+    },
+
+    {
+      "SkillId": 9107,
+      "SkillName": "Poison Weakness",
+      "RequiredClass": "Rogue",
+      "SkillType": "Debuff",
+      "Duration": 5.0,
+      "DefenseDecrease": 10.0
+    },
+    {
+      "SkillId": 9108,
+      "SkillName": "Expose Weakness",
+      "RequiredClass": "Rogue",
+      "SkillType": "Debuff",
+      "Duration": 4.0,
+      "AttackDecrease": 12.0
+    }
+  ]

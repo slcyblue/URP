@@ -1,8 +1,8 @@
 #include "GameDataRPCHandler.h"
-#include "../Core/Subsystems/URPGameDataSubsystem.h"
-#include "../Core/Subsystems/URPNetworkSubsystem.h"
-#include "../Server/URPServerDataService.h"
-#include "../Server/Services/URPGameDataService.h"
+#include "Core/Subsystems/Data/URPGameDataSubsystem.h"
+#include "Core/Subsystems/Network/URPNetworkSubsystem.h"
+#include "Server/URPServerDataService.h"
+#include "Server/Services/URPGameDataService.h"
 
 void UGameDataRPCHandler::Initialize(UURPNetworkSubsystem* InNetwork)
 {

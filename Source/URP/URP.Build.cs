@@ -10,7 +10,7 @@ public class URP : ModuleRules
 
         PublicIncludePaths.AddRange(new string[] {
             "URP",
-            "URP/Data",
+            "URP/Types",
             "URP/Network",
             "URP/Server",
             "URP/Server/Services",

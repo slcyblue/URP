@@ -3,7 +3,7 @@
 
 #include "AI/BTService_UpdateTargetState.h"
 #include "AIController.h"
-#include "Data/URPCommonEnums.h"
+#include "Types/URPCommonEnums.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTService_UpdateTargetState::UBTService_UpdateTargetState()

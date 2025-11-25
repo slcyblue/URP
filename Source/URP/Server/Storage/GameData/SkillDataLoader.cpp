@@ -20,7 +20,6 @@ bool FSkillDataLoader::Load(const FString& FilePath, FGameDataPacket& OutPacket)
         return false;
     }
 
-    OutPacket.TableName = TEXT("SkillData");
     OutPacket.SkillDatas = Rows;
     return true;
 }

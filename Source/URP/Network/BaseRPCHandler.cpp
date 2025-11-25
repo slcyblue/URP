@@ -1,5 +1,5 @@
 #include "BaseRPCHandler.h"
-#include "URP/Core//Subsystems/URPNetworkSubsystem.h"
+#include "URP/Core//Subsystems/Network/URPNetworkSubsystem.h"
 
 void UBaseRPCHandler::Initialize(UURPNetworkSubsystem* InNetwork)
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "Data/URPPlayerData.h"
+#include "Types/URPPlayerTypes.h"
 #include "BaseRPCHandler.h"
 #include "PlayerDataRPCHandler.generated.h"
 

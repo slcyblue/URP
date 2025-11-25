@@ -3,7 +3,7 @@
 
 #include "AI/BTTaskNode_ReturnHome.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Data/URPCommonEnums.h"
+#include "Types/URPCommonEnums.h"
 #include "AIController.h"
 
 UBTTaskNode_ReturnHome::UBTTaskNode_ReturnHome()

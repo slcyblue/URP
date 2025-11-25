@@ -37,8 +37,11 @@ bool UURPGameDataService::BuildSyncResponse(const FGameDataSyncRequest& Req, FGa
     TArray<FString> Tables = {
         TEXT("MonsterTable"),
         TEXT("PathConfig"),
-        TEXT("SkillTable"),
         TEXT("ClassData"),
+        TEXT("Skill_Attack"),
+        TEXT("Skill_Buff"),
+        TEXT("Skill_Debuff"),
+        TEXT("Skill_DOT"),
     };
 
     // 패킷 생성

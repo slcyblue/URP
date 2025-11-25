@@ -1,8 +1,8 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Server/Core/URPServerServiceBase.h"
-#include "Data/URPLoginData.h"
-#include "Data/URPPlayerData.h"
+#include "Types/URPLoginTypes.h"
+#include "Types/URPPlayerTypes.h"
 #include "Server/Storage/URPJsonStorage.h"
 #include "URPPlayerDataService.generated.h"
 

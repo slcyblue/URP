@@ -1,7 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Server/Core/URPServerServiceBase.h"
-#include "Data/URPGameData.h"
+#include "Types/URPGameTypes.h"
 #include "Server/Storage/URPJsonStorage.h"
 #include "URPGameDataService.generated.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Data/URPCommonEnums.h"
+#include "Types/URPCommonEnums.h"
 #include "URPIServerService.generated.h"
 
 UINTERFACE(MinimalAPI)

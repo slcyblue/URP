@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "Data/URPGameData.h"
+#include "Types/URPGameTypes.h"
 #include "BaseRPCHandler.h"
 #include "GameDataRPCHandler.generated.h"
 

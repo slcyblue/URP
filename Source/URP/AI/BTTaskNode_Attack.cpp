@@ -19,11 +19,11 @@ EBTNodeResult::Type UBTTaskNode_Attack::ExecuteTask(UBehaviorTreeComponent& Owne
 
     if (!Monster || !Target) return EBTNodeResult::Failed;
 
-    //// 공격 애니메이션 실행
-    //Monster->PlayAttackMontage();   // 네 함수에 맞게 수정!
+    // 공격 애니메이션 실행
+    //Monster->PlayAttackMontage();
 
-    //// 데미지 주기
-    //Monster->DealDamageTo(Target);
+    // 데미지 주기
+    Monster->PerformBasicAttack(Target);
 
     // 쿨다운 초기화
     BB->SetValueAsFloat("AttackCooldown", AttackCooldownTime);

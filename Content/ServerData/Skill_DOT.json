@@ -1,0 +1,34 @@
+[
+    {
+      "SkillId": 8001,
+      "SkillName": "Burning DOT",
+      "SkillType": "DOT",
+      "Duration": 5.0,
+      "TickInterval": 1.0,
+      "DotDamageMultiplier": 0.18
+    },
+    {
+      "SkillId": 8002,
+      "SkillName": "Poison DOT",
+      "SkillType": "DOT",
+      "Duration": 6.0,
+      "TickInterval": 1.0,
+      "DotDamageMultiplier": 0.12
+    },
+    {
+      "SkillId": 8003,
+      "SkillName": "Bleeding DOT",
+      "SkillType": "DOT",
+      "Duration": 6.0,
+      "TickInterval": 1.0,
+      "DotDamageMultiplier": 0.14
+    },
+    {
+      "SkillId": 8004,
+      "SkillName": "Frostbite DOT",
+      "SkillType": "DOT",
+      "Duration": 4.0,
+      "TickInterval": 1.0,
+      "DotDamageMultiplier": 0.10
+    }
+ ]

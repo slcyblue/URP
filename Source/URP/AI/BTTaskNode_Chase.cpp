@@ -1,7 +1,7 @@
 #include "BTTaskNode_Chase.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
-#include "Characters/URPMonsterCharacter.h"
+#include "Characters/Monster/URPMonsterCharacter.h"
 
 UBTTaskNode_Chase::UBTTaskNode_Chase()
 {

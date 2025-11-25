@@ -1,7 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "Data/URPCommonEnums.h"
+#include "Types/URPCommonEnums.h"
 #include "Server/Core/URPIServerService.h"
 #include "URPServerDataService.generated.h"
 

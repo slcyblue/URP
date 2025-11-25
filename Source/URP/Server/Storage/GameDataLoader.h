@@ -1,6 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "Data/URPGameData.h"
+#include "Types/URPGameTypes.h"
 
 /**
  * 게임데이터 로드 공통 인터페이스

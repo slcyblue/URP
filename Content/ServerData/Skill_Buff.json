@@ -1,0 +1,70 @@
+  [
+    {
+      "SkillId": 9001,
+      "SkillName": "Battle Cry",
+      "RequiredClass": "Barbarian",
+      "SkillType": "Buff",
+      "Duration": 6.0,
+      "AttackIncrease": 25.0
+    },
+    {
+      "SkillId": 9002,
+      "SkillName": "Iron Will",
+      "RequiredClass": "Barbarian",
+      "SkillType": "Buff",
+      "Duration": 8.0,
+      "DefenseIncrease": 30.0
+    },
+
+    {
+      "SkillId": 9003,
+      "SkillName": "Holy Blessing",
+      "RequiredClass": "Knight",
+      "SkillType": "Buff",
+      "Duration": 8.0,
+      "DefenseIncrease": 40.0
+    },
+    {
+      "SkillId": 9004,
+      "SkillName": "Sacred Vigor",
+      "RequiredClass": "Knight",
+      "SkillType": "Buff",
+      "Duration": 6.0,
+      "AttackIncrease": 20.0
+    },
+
+    {
+      "SkillId": 9005,
+      "SkillName": "Arcane Surge",
+      "RequiredClass": "Mage",
+      "SkillType": "Buff",
+      "Duration": 5.0,
+      "AttackIncrease": 60.0
+    },
+    {
+      "SkillId": 9006,
+      "SkillName": "Haste",
+      "RequiredClass": "Mage",
+      "SkillType": "Buff",
+      "Duration": 6.0,
+      "AttackSpeedIncrease": 0.20
+    },
+
+    {
+      "SkillId": 9007,
+      "SkillName": "Shadow Dance",
+      "RequiredClass": "Rogue",
+      "SkillType": "Buff",
+      "Duration": 6.0,
+      "MoveSpeedIncrease": 150.0,
+      "AttackSpeedIncrease": 0.25
+    },
+    {
+      "SkillId": 9008,
+      "SkillName": "Keen Edge",
+      "RequiredClass": "Rogue",
+      "SkillType": "Buff",
+      "Duration": 5.0,
+      "AttackIncrease": 18.0
+    }
+  ]

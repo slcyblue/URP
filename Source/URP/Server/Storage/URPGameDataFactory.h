@@ -1,8 +1,8 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "URPGameDataFactory.h"
-#include <URPGameData.h>
-#include <GameDataLoader.h>
+#include "Types/URPGameTypes.h"
+#include "GameDataLoader.h"
 
 /**
  * 테이블명 기반으로 적절한 로더를 반환하는 팩토리 클래스

@@ -2,11 +2,11 @@
 
 
 #include "URPGameInstance.h"
-#include "Subsystems/URPNetworkSubsystem.h"
-#include "Subsystems/URPLevelTransitionSubsystem.h"
-#include "Subsystems/URPGameDataSubsystem.h"
-#include "Subsystems/URPUserDataSubsystem.h"
-#include "Subsystems/URPUISubsystem.h"
+#include "Subsystems/Network/URPNetworkSubsystem.h"
+#include "Subsystems/UI/URPLevelTransitionSubsystem.h"
+#include "Subsystems/UI/URPUISubsystem.h"
+#include "Subsystems/Data/URPGameDataSubsystem.h"
+#include "Subsystems/Data/URPUserDataSubsystem.h"
 
 void UURPGameInstance::Init()
 {

@@ -12,15 +12,25 @@ void UURPGameDataFactory::RegisterDefaults()
 
     Loaders.Add(TEXT("MonsterTable"), MakeShared<FMonsterTableLoader>());
     Loaders.Add(TEXT("PathConfig"), MakeShared<FPathConfigLoader>());
-    Loaders.Add(TEXT("SkillTable"), MakeShared<FSkillDataLoader>());
     Loaders.Add(TEXT("ClassData"), MakeShared<FClassDataLoader>());
+    
+    TSharedPtr<IGameDataLoader> SkillLoader = MakeShared<FSkillDataLoader>();
+    Loaders.Add(TEXT("Skill_Attack"), SkillLoader);
+    Loaders.Add(TEXT("Skill_Buff"), SkillLoader);
+    Loaders.Add(TEXT("Skill_Debuff"), SkillLoader);
+    Loaders.Add(TEXT("Skill_DOT"), SkillLoader);
 }
 
 bool UURPGameDataFactory::BuildPacket(const FString& TableName, const FString& FilePath, FGameDataPacket& OutPacket)
 {
     if (auto Loader = Loaders.Find(TableName))
     {
-        return (*Loader)->Load(FilePath, OutPacket);
+        if ((*Loader)->Load(FilePath, OutPacket))
+        {
+            OutPacket.TableName = TableName;
+            return true;
+        }
+        return false;
     }
 
     UE_LOG(LogTemp, Warning, TEXT("[GameDataFactory] No loader registered for %s"), *TableName);

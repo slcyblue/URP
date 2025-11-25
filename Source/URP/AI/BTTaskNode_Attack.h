@@ -6,7 +6,7 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Characters/URPMonsterCharacter.h"
+#include "Characters/Monster/URPMonsterCharacter.h"
 #include "BTTaskNode_Attack.generated.h"
 
 /**

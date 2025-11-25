@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "URPIServerService.h"
-#include "Data/URPCommonEnums.h"
+#include "Types/URPCommonEnums.h"
 #include "Server/Storage//URPJsonStorage.h"
 #include "URPServerServiceBase.generated.h"
 
