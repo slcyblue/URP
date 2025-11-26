@@ -26,21 +26,17 @@ void UBTService_UpdateTargetState::TickNode(UBehaviorTreeComponent& OwnerComp, u
     float Cooldown = BB->GetValueAsFloat("AttackCooldown");
     BB->SetValueAsFloat("AttackCooldown", FMath::Max(Cooldown - DeltaSeconds, 0.0f));
 
-    // 타겟 사라짐 체크
     if (!Target)
     {
-        BB->SetValueAsObject("TargetActor", nullptr);
-        BB->SetValueAsBool("HasTarget", false);
-        BB->SetValueAsEnum("AIState", (uint8)EAIState::Return);
+        BB->SetValueAsBool("IsInAttackRange", false);
         return;
     }
 
-    // 거리 체크
+    // 거리 기반 Attack / Chase 상태만 계속 업데이트
     float Dist = FVector::Dist(SelfPawn->GetActorLocation(), Target->GetActorLocation());
     BB->SetValueAsBool("IsInAttackRange", Dist <= AttackRange);
     BB->SetValueAsVector("LastSeenLocation", Target->GetActorLocation());
 
-    // 추적 상태
     if (Dist > AttackRange)
         BB->SetValueAsEnum("AIState", (uint8)EAIState::Chase);
     else

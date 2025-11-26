@@ -41,15 +41,22 @@ void AURPCharacterBase::ApplyDamage(float Amount)
     UE_LOG(LogTemp, Log, TEXT("[%s] Took Damage: %.1f | HP: %lld / %lld"),
         *GetName(), Amount, CurrentHp, MaxHp);
 
-    if (CurrentHp <= 0)
+    if (CurrentHp <= 0 && !bIsDead)
     {
+        bIsDead = true;
+
+        if (HasAuthority())
+        {
+            OnCharacterDied.Broadcast(this);
+        }
+
         if (AURPMonsterCharacter* Monster = Cast<AURPMonsterCharacter>(this))
         {
             Monster->Die();
         }
-        else
+        else if (AURPPlayerCharacter* Player = Cast<AURPPlayerCharacter>(this))
         {
-            // 플레이어 죽음은 나중에 구현
+            Player->Die();
         }
     }
 }

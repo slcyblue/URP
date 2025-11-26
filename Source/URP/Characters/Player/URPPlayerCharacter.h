@@ -58,12 +58,13 @@ public:
 
     void PlayAttack();
     void PlaySkill();
+    
+    virtual void Die();
 
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 
 private:
     // 카메라 셋팅

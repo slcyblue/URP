@@ -103,6 +103,25 @@ void AURPPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 }
 
+void AURPPlayerCharacter::Die()
+{
+    UE_LOG(LogTemp, Warning, TEXT("[Player] %s died!"), *GetName());
+
+    // 입력 차단
+    DisableInput(Cast<APlayerController>(GetController()));
+
+    // 죽음 애니메이션 처리 (있으면)
+    /*if (DeathMontage)
+    {
+        PlayAnimMontage(DeathMontage);
+    }*/
+
+    // 상태 업데이트
+    //bIsDead = true;
+
+    // 나중에 Respawn / UI 처리 추가 가능
+}
+
 void AURPPlayerCharacter::PlayAttack()
 {
     if (Anim)

@@ -5,6 +5,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Types/URPCommonEnums.h"
 #include "AIController.h"
+#include "Characters/Monster/URPMonsterCharacter.h"
 
 UBTTaskNode_ReturnHome::UBTTaskNode_ReturnHome()
 {
@@ -24,11 +25,17 @@ EBTNodeResult::Type UBTTaskNode_ReturnHome::ExecuteTask(UBehaviorTreeComponent& 
     const float Distance = FVector::Dist(Pawn->GetActorLocation(), Home);
 
     // Home에 거의 도착함 → Idle로 전환
-    if (Distance < 80.f)
+    if (Distance < 60.f)
     {
         BB->SetValueAsEnum("AIState", (uint8)EAIState::Idle);
         BB->SetValueAsBool("HasTarget", false);
         BB->SetValueAsObject("TargetActor", nullptr);
+
+        if (AURPMonsterCharacter* Monster = Cast<AURPMonsterCharacter>(Pawn))
+        {
+            Monster->ClearTarget();
+        }
+
         return EBTNodeResult::Succeeded;
     }
 

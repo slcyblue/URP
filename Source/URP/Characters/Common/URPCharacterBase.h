@@ -10,17 +10,17 @@
 #include "URPStatComponent.h"
 #include "URPCharacterBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterDied, AURPCharacterBase*, DeadCharacter);
+
 UCLASS()
 class URP_API AURPCharacterBase : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AURPCharacterBase();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
@@ -68,10 +68,15 @@ public:
     UPROPERTY(VisibleAnywhere)
     UURPStatComponent* StatComponent;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State")
+    bool bIsDead = false;
+
+    UPROPERTY(BlueprintAssignable)
+    FOnCharacterDied OnCharacterDied;
+
     // 공통 행동
     virtual void ApplyDamage(float Amount);
 
     UFUNCTION(BlueprintCallable)
     virtual void RecalculateStats();
-
 };

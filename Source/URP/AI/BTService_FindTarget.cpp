@@ -45,5 +45,17 @@ void UBTService_FindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
     {
         BB->SetValueAsObject(TargetKey, ClosestTarget);
         BB->SetValueAsBool("HasTarget", true);
+
+        if (AURPMonsterCharacter* Monster = Cast<AURPMonsterCharacter>(AIPawn))
+        {
+            if (IsValid(ClosestTarget))
+            {
+                Monster->SetTargetFromBlackboard(ClosestTarget);
+            }
+            else
+            {
+                Monster->ClearTarget();
+            }
+        }
     }
 }

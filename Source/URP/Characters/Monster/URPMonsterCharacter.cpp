@@ -7,6 +7,7 @@
 #include "Core/Subsystems/Data/URPGameDataSubsystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "URPMonsterAIController.h"
 
 AURPMonsterCharacter::AURPMonsterCharacter()
 {
@@ -29,10 +30,19 @@ void AURPMonsterCharacter::SetActive(bool bActive)
         SetActorHiddenInGame(false);
         SetActorEnableCollision(true);
         GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+        if (AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(GetController()))
+        {
+            if (UBlackboardComponent* BB = AI->GetBlackboardComponent())
+            {
+                BB->SetValueAsVector("HomeLocation", GetActorLocation());
+            }
+        }
     }
     else
     {
         // 비활성 상태 (Pool로 돌아감)
+        ClearTarget();
         SetActorHiddenInGame(true);
         SetActorEnableCollision(false);
         GetCharacterMovement()->DisableMovement();
@@ -122,6 +132,81 @@ void AURPMonsterCharacter::ApplyAI(const FURPPathConfig& Path)
     }
 }
 
+void AURPMonsterCharacter::SetTargetFromBlackboard(AActor* NewTargetActor)
+{
+    if (!HasAuthority()) return;
+
+
+    // 1) NewTarget 유효성 검사
+    if (!IsValid(NewTargetActor))
+    {
+        ClearTarget();
+        return;
+    }
+
+    AURPCharacterBase* NewTarget = Cast<AURPCharacterBase>(NewTargetActor);
+
+    // 2) 캐스팅 실패 / 자기 자신 / 이미 죽은 대상이면 타겟 해제
+    if (!IsValid(NewTarget) || NewTarget == this || NewTarget->bIsDead)
+    {
+        ClearTarget();
+        return;
+    }
+
+    // 3) 현재 타겟과 동일하면 다시 바인딩할 필요 없음
+    if (CurrentTarget == NewTarget)
+        return;
+
+    // 4) 기존 타겟 언바인딩
+    if (IsValid(CurrentTarget))
+    {
+        CurrentTarget->OnCharacterDied.RemoveDynamic(
+            this, &AURPMonsterCharacter::OnTargetDied);
+    }
+
+    // 5) 새 타겟 설정 + 구독
+    CurrentTarget = NewTarget;
+
+    CurrentTarget->OnCharacterDied.AddDynamic(
+        this, &AURPMonsterCharacter::OnTargetDied);
+}
+
+void AURPMonsterCharacter::OnTargetDied(AURPCharacterBase* Dead)
+{
+    if (!HasAuthority()) return;
+    if (Dead != CurrentTarget) return;
+
+    CurrentTarget = nullptr;
+
+    ClearTarget();
+
+    // Blackboard 정리 + Return 상태로 전환
+    if (AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(GetController()))
+    {
+        UBlackboardComponent* BB = AI->GetBlackboardComponent();
+        if (BB)
+        {
+            BB->SetValueAsObject("TargetActor", nullptr);
+            BB->SetValueAsBool("HasTarget", false);
+            BB->SetValueAsEnum("AIState", (uint8)EAIState::Return);
+        }
+    }
+}
+
+void AURPMonsterCharacter::ClearTarget()
+{
+    if (!HasAuthority())
+        return;
+
+    if (IsValid(CurrentTarget))
+    {
+        CurrentTarget->OnCharacterDied.RemoveDynamic(
+            this, &AURPMonsterCharacter::OnTargetDied);
+    }
+
+    CurrentTarget = nullptr;
+}
+
 void AURPMonsterCharacter::PerformBasicAttack(AActor* TargetActor)
 {
     AURPCharacterBase* Target = Cast<AURPCharacterBase>(TargetActor);
@@ -141,7 +226,9 @@ void AURPMonsterCharacter::PerformBasicAttack(AActor* TargetActor)
 void AURPMonsterCharacter::Die()
 {
     if (!bIsActive)
-        return; // 이미 죽어서 비활성화 상태면 무시
+        return;
+
+    ClearTarget();
 
     bIsActive = false;
 

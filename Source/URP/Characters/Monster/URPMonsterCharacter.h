@@ -22,7 +22,7 @@ class URP_API AURPMonsterCharacter : public AURPCharacterBase
 public:
     AURPMonsterCharacter();
     
-    virtual void Die();                     // 사망 처리 함수
+    virtual void Die();
     virtual void OnDeathMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
     void PerformBasicAttack(AActor* TargetActor);
@@ -31,6 +31,16 @@ public:
     bool IsActive() const { return bIsActive; }
 
     void InitializeFromMonsterData(const FString MonsterName, int32 DifficultyLevel);
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+    AURPCharacterBase* CurrentTarget = nullptr;
+
+    void SetTargetFromBlackboard(AActor* NewTargetActor);
+
+    UFUNCTION()
+    void OnTargetDied(AURPCharacterBase* Dead);
+
+    void ClearTarget();
 
     UPROPERTY()
     AURPMonsterSpawnZone* OwningZone;
