@@ -17,8 +17,14 @@ public:
     /** 플레이어 직업에 맞는 스킬만 로드 */
     void InitializeSkills(EURPClassType ClassType);
 
+    void InitializeDefaultSlots(EURPClassType ClassType);
+    void ApplySlotsFromPlayerData(const TArray<FSkillEntry>& SkillLevels);
+    void EnsureValidSkillSlots(EURPClassType ClassType, TArray<FSkillEntry>& SkillLevels);
+
     /** SkillId 기반으로 스킬 실행 */
     void ExecuteSkill(int32 SkillId, float AdjustTime);
+    float GetRemainingCooldown(int32 SkillId) const;
+    float GetCooldown(int32 SkillId) const;
 
     /** 스킬 등록 */
     void RegisterSkill(int32 SkillId, UURPSkillBase* Skill);
@@ -26,9 +32,9 @@ public:
     /** 스킬 찾기 */
     UURPSkillBase* GetSkill(int32 SkillId) const;
 
-    float GetRemainingCooldown(int32 SkillId) const;
-
-    float GetCooldown(int32 SkillId) const;
+    /* 스킬 슬롯 */
+    void SetSkillSlots(const TArray<int32>& InSlots);
+    const TArray<int32>& GetSkillSlots() const { return SkillSlots; }
 
 protected:
     virtual void BeginPlay() override;
@@ -36,4 +42,7 @@ protected:
 private:
     UPROPERTY()
     TMap<int32, UURPSkillBase*> SkillMap;
+
+    UPROPERTY(VisibleAnywhere)
+    TArray<int32> SkillSlots;
 };

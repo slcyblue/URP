@@ -1,20 +1,8 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "URPCommonEnums.h"
+#include "URPSkillTypes.h"
 #include "URPPlayerTypes.generated.h"
-
-USTRUCT(BlueprintType)
-struct URP_API FSkillEntry
-{
-    GENERATED_BODY()
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString SkillId;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 Level;
-};
-
 
 USTRUCT(BlueprintType)
 struct URP_API FPlayerData

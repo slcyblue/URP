@@ -79,10 +79,15 @@ void AURPPlayerCharacter::InitializeFromPlayerData()
     ClassComponent->SetClass(CachedPlayerData.SelectedClass);
     EquipmentComponent->ApplyEquipment(ClassComponent->GetClassData());
     SkillComponent->InitializeSkills(CachedPlayerData.SelectedClass);
+    SkillComponent->EnsureValidSkillSlots(
+        CachedPlayerData.SelectedClass,
+        CachedPlayerData.SkillLevels
+    );
     StatComponent->Recalculate();
 
     UE_LOG(LogTemp, Log, TEXT("Player initialized from PlayerData"));
 }
+
 
 
 void AURPPlayerCharacter::Tick(float DeltaSeconds)

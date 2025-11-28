@@ -14,8 +14,6 @@ class URP_API AURPPlayerController : public APlayerController
 
 public:
     virtual void BeginPlay() override;
-
-    virtual void SetupInputComponent() override;
     virtual void Tick(float DeltaTime) override;
 
     UPROPERTY()
@@ -27,15 +25,14 @@ public:
     UFUNCTION()
     void HighlightTarget(AActor* Target);
 
-    UFUNCTION()
-    void OnMovePressed();    // 마우스 누름 시작
-    UFUNCTION()
-    void OnMoveReleased();   // 마우스 뗌
     void HandleContinuousMove(); // 매 프레임 이동 갱신
 
-private:
-    bool bIsMoving = false;
+    bool bIsMovingContinuous = false;
 
+    void MoveToCursorOnce();       // 한 번 이동
+    void UpdateMoveIfHolding();    // 누르고 있는 동안 이동 갱신
+
+private:
     UPROPERTY()
     AURPPlayerCharacter* CachedCharacter;
 };

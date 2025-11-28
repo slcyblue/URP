@@ -26,6 +26,17 @@
     }
   },
 
+  "Input": {
+    "IMC": "/Game/Input/IMC_URPInput.IMC_URPInput",
+    "LeftClick": "/Game/Input/IA_LeftClick.IA_LeftClick",
+    "RightClick": "/Game/Input/IA_RightClick.IA_RightClick",
+
+    "SkillQ": "/Game/Input/IA_Skill_Q.IA_Skill_Q",
+    "SkillW": "/Game/Input/IA_Skill_W.IA_Skill_W",
+    "SkillE": "/Game/Input/IA_Skill_E.IA_Skill_E",
+    "SkillR": "/Game/Input/IA_Skill_R.IA_Skill_R"
+  },
+
   "Global": {
     "EffectBase": "/Game/Effects/",
     "SoundBase": "/Game/Sounds/",

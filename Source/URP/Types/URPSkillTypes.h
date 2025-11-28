@@ -3,6 +3,21 @@
 #include "URPCommonEnums.h"
 #include "URPSkillTypes.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct URP_API FSkillEntry
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 SkillId;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 Level;
+};
+
+
+
 USTRUCT(BlueprintType)
 struct URP_API FURPSkillRow
 {

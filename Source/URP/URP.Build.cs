@@ -19,7 +19,7 @@ public class URP : ModuleRules
         });
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", 
-            "InputCore", "Json", "JsonUtilities","UMG", "Slate", "SlateCore", "NavigationSystem",
+            "InputCore", "EnhancedInput", "Json", "JsonUtilities","UMG", "Slate", "SlateCore", "NavigationSystem",
             "AIModule" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

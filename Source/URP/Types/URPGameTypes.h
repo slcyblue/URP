@@ -59,6 +59,24 @@ struct FURPPathConfig
 
     UPROPERTY()
     TMap<FString, FString> PlayerClassMap;
+
+    UPROPERTY()
+    FString IMC;
+
+    UPROPERTY()
+    FString LeftClick;
+
+    UPROPERTY()
+    FString RightClick;
+
+    UPROPERTY()
+    FString SkillQ;
+    UPROPERTY()
+    FString SkillW;
+    UPROPERTY()
+    FString SkillE;
+    UPROPERTY()
+    FString SkillR;
 };
 
 

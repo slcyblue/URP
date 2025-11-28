@@ -26,6 +26,10 @@ public:
 
     void Skill(int32 SkillId);
 
+    /** 슬롯 기반 스킬 (QWER: 0~3) */
+    void UseSkillSlot(int32 SlotIndex);
+
+
 protected:
     virtual void BeginPlay() override;
 

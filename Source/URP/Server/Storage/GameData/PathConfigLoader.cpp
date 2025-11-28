@@ -58,6 +58,18 @@ bool FPathConfigLoader::Load(const FString& FilePath, FGameDataPacket& OutPacket
         }
     }
 
+    if (const TSharedPtr<FJsonObject>* InputObj;
+        RootObj->TryGetObjectField(TEXT("Input"), InputObj))
+    {
+        (*InputObj)->TryGetStringField(TEXT("IMC"), OutConfig.IMC);
+        (*InputObj)->TryGetStringField(TEXT("LeftClick"), OutConfig.LeftClick);
+        (*InputObj)->TryGetStringField(TEXT("RightClick"), OutConfig.RightClick);
+        (*InputObj)->TryGetStringField(TEXT("SkillQ"), OutConfig.SkillQ);
+        (*InputObj)->TryGetStringField(TEXT("SkillW"), OutConfig.SkillW);
+        (*InputObj)->TryGetStringField(TEXT("SkillE"), OutConfig.SkillE);
+        (*InputObj)->TryGetStringField(TEXT("SkillR"), OutConfig.SkillR);
+    }
+
     UE_LOG(LogTemp, Log, TEXT("[PathConfigLoader] Loaded PathConfig.json successfully"));
 
     return true;

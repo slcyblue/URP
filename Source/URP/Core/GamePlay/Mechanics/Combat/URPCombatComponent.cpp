@@ -28,7 +28,7 @@ void UURPCombatComponent::Attack()
         ServerAttack();
     }
 
-    // 공격 애니메이션은 로컬에서만 (모든 클라에서 자연스럽게 보임)
+    // 공격 애니메이션은 로컬에서만
     OwnerPC->PlayAttack();
 }
 
@@ -53,6 +53,11 @@ void UURPCombatComponent::PerformServerHitTrace()
     bool bHit = GetWorld()->LineTraceSingleByChannel(
         Hit, Start, End, ECC_Pawn, Params
     );
+
+#if WITH_EDITOR
+    // 디버그용 라인
+    DrawDebugLine(GetWorld(), Start, End, bHit ? FColor::Red : FColor::Green, false, 0.3f, 0, 2.f);
+#endif
 
     if (!bHit)
         return;
@@ -83,13 +88,40 @@ float UURPCombatComponent::GetFinalDamage() const
 
 void UURPCombatComponent::Skill(int32 SkillId)
 {
-    // 로컬 플레이어 → 서버 호출
-    if (OwnerPC && OwnerPC->IsLocallyControlled()) {
+    if (!OwnerPC || !SkillComp)
+        return;
+
+    // 1) 로컬 선쿨다운 체크
+    if (SkillComp->GetRemainingCooldown(SkillId) > 0.f)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[Client] Skill %d cooldown"), SkillId);
+        return;
+    }
+
+    // 2) 서버 호출
+    if (OwnerPC->IsLocallyControlled())
+    {
         float ClientTime = GetWorld()->GetTimeSeconds();
         ServerSkill(SkillId, ClientTime);
     }
 
     OwnerPC->PlaySkill(); // 애니메이션은 로컬
+}
+
+void UURPCombatComponent::UseSkillSlot(int32 SlotIndex)
+{
+    if (!SkillComp || SlotIndex < 0)
+        return;
+
+    const TArray<int32>& Slots = SkillComp->GetSkillSlots();
+    if (!Slots.IsValidIndex(SlotIndex))
+        return;
+
+    const int32 SkillId = Slots[SlotIndex];
+    if (SkillId <= 0)
+        return;
+
+    Skill(SkillId); // 기존 Skill() 경로 재사용 (RPC + 애니메이션)
 }
 
 void UURPCombatComponent::ServerSkill_Implementation(int32 SkillId, float ClientTime)
