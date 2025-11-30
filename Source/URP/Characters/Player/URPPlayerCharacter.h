@@ -57,7 +57,7 @@ public:
     void InitializeFromPlayerData();
 
     void PlayAttack();
-    void PlaySkill();
+    void PlaySkill(int32 SkillId);
     
     virtual void Die();
 
@@ -68,8 +68,6 @@ protected:
 
 private:
     // 카메라 셋팅
-
-        
     void UpdateCameraTransparency(float DeltaTime);
 
     UURPPlayerAnimInstance* Anim;

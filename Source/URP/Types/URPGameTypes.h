@@ -44,8 +44,6 @@ struct FURPPathConfig
     UPROPERTY()
     FString DefaultMonsterBT;
 
-    UPROPERTY()
-    FString DefaultMonsterDeath;
 
     // Player Class
     UPROPERTY()
@@ -95,7 +93,19 @@ struct FURPClassData
     FString PawnClassPath;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString AttackAnimPath;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString DeathAnimPath;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UAnimInstance> AnimClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UAnimMontage* AttackAnim = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UAnimMontage* DeathAnim = nullptr;
 
     // === 클래스 기본 스탯 ===
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

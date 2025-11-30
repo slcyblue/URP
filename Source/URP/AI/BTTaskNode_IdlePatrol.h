@@ -21,5 +21,5 @@ protected:
     virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8*) override;
 
     UPROPERTY(EditAnywhere, Category = "AI")
-    float PatrolRadius = 600.f;
+    float PatrolRadius = 300.f;
 };

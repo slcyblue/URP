@@ -4,6 +4,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/InputComponent.h"
+#include "Core/GamePlay/Mechanics/Skill/Base/URPSkillBase.h"
 #include "AIController.h"
 
 AURPPlayerCharacter::AURPPlayerCharacter()
@@ -115,32 +116,57 @@ void AURPPlayerCharacter::Die()
     // 입력 차단
     DisableInput(Cast<APlayerController>(GetController()));
 
-    // 죽음 애니메이션 처리 (있으면)
-    /*if (DeathMontage)
+    UAnimMontage* DeathMontage = ClassComponent->GetClassData()->DeathAnim;
+    if (DeathMontage != nullptr)
     {
-        PlayAnimMontage(DeathMontage);
-    }*/
+        float Duration = PlayAnimMontage(DeathMontage);
+        UE_LOG(LogTemp, Warning, TEXT("Montage Duration = %.2f"), Duration);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Failed to get default montage DeathMontage"));
+    }
 
     // 상태 업데이트
-    //bIsDead = true;
-
+    bIsDead = true;
+    OnCharacterDied.Broadcast(this);
     // 나중에 Respawn / UI 처리 추가 가능
 }
 
 void AURPPlayerCharacter::PlayAttack()
 {
-    if (Anim)
+    UAnimMontage* AttackMontage = ClassComponent->GetClassData()->AttackAnim;
+    if (AttackMontage != nullptr)
     {
-        Anim->bIsAttacking = true;
-        // 몽타주 재생 등 가능
+        float Duration = PlayAnimMontage(AttackMontage);
+        UE_LOG(LogTemp, Warning, TEXT("Montage Duration = %.2f"), Duration);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Failed to get default montage AttackMontage"));
     }
 }
 
-void AURPPlayerCharacter::PlaySkill()
+void AURPPlayerCharacter::PlaySkill(int32 SkillId)
 {
-    if (Anim)
+    if (!Anim || !SkillComponent)
+        return;
+
+    Anim->bIsUsingSkill = true;
+
+    UURPSkillBase* Skill = SkillComponent->GetSkill(SkillId);
+    if (!Skill)
+        return;
+
+    UAnimMontage* SkillMontage = Skill->SkillAnim;
+    if (!SkillMontage)
     {
-        Anim->bIsUsingSkill = true;
-        // 스킬 애니메이션 재생 등
+        UE_LOG(LogTemp, Warning, TEXT("Skill %d has no SkillAnim Montage"), SkillId);
+        return;
     }
+
+    // ACharacter has PlayAnimMontage()
+    float Duration = PlayAnimMontage(SkillMontage);
+
+    UE_LOG(LogTemp, Log, TEXT("[Player] Skill %d Montage Duration = %.2f"), SkillId, Duration);
 }

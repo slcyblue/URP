@@ -21,5 +21,5 @@ protected:
     virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
     UPROPERTY(EditAnywhere, Category = "AI")
-    float SearchRadius = 2000.f;
+    float SearchRadius = 60.f;
 };

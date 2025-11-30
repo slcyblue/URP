@@ -2,16 +2,16 @@
 #include "AIController.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Net/UnrealNetwork.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Core/Subsystems/Data/URPGameDataSubsystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "URPMonsterAIController.h"
+#include "Net/UnrealNetwork.h"
 
 AURPMonsterCharacter::AURPMonsterCharacter()
 {
-    bReplicates = true;             // Actor 복제 활성화
+    bReplicates = true;
     bIsActive = false;
 }
 
@@ -26,26 +26,59 @@ void AURPMonsterCharacter::SetActive(bool bActive)
 
     if (bActive)
     {
-        // 활성화 상태
         SetActorHiddenInGame(false);
         SetActorEnableCollision(true);
-        GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+        SetActorTickEnabled(true);
 
-        if (AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(GetController()))
+        GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+
+        // Controller 없으면 생성 (UnPossess 안 쓰기 때문에 자동 Possess 안됨)
+        if (!GetController())
         {
-            if (UBlackboardComponent* BB = AI->GetBlackboardComponent())
-            {
-                BB->SetValueAsVector("HomeLocation", GetActorLocation());
-            }
+            SpawnDefaultController();
         }
+
+        // 다음 프레임에서 BT 시작 (Controller가 붙길 기다림)
+        FTimerHandle TempHandle;
+        GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+            {
+                AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(GetController());
+                if (!AI) return;
+
+                UBlackboardComponent* BB = AI->GetBlackboardComponent();
+                if (BB)
+                {
+                    BB->SetValueAsVector("HomeLocation", GetActorLocation());
+                    BB->SetValueAsEnum("AIState", (uint8)EAIState::Idle);
+                    BB->SetValueAsObject("TargetActor", nullptr);
+                    BB->SetValueAsBool("HasTarget", false);
+                    BB->SetValueAsBool("IsInAttackRange", false);
+                    BB->SetValueAsFloat("AttackCooldown", 0.f);
+                }
+
+                AI->RunBehaviorTree(AI->BehaviorTree);
+                if (AI->BrainComponent)
+                {
+                    AI->BrainComponent->StartLogic();
+                }
+            });
     }
     else
     {
-        // 비활성 상태 (Pool로 돌아감)
         ClearTarget();
+
+        if (AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(GetController()))
+        {
+            if (AI->BrainComponent)
+            {
+                AI->BrainComponent->StopLogic(TEXT("Monster Deactivated"));
+            }
+        }
+
         SetActorHiddenInGame(true);
         SetActorEnableCollision(false);
         GetCharacterMovement()->DisableMovement();
+        SetActorTickEnabled(false);
     }
 }
 
@@ -54,13 +87,15 @@ void AURPMonsterCharacter::InitializeFromMonsterData(const FString MonsterName, 
     UURPGameDataSubsystem* GDS = GetGameInstance()->GetSubsystem<UURPGameDataSubsystem>();
     const FURPMonsterRow* Data = GDS->GetMonsterRow(MonsterName);
     const FURPPathConfig& Path = GDS->GetPathConfig();
-    ApplyAppearance(*Data , Path, DifficultyLevel);
-    ApplyStats(*Data, DifficultyLevel);
-    ApplyAI(Path);
+
+    if (Data)
+    {
+        ApplyAppearance(*Data, Path, DifficultyLevel);
+        ApplyStats(*Data, DifficultyLevel);
+    }
 
     SetActorHiddenInGame(false);
     SetActorEnableCollision(true);
-    SetActorTickEnabled(true);
 }
 
 void AURPMonsterCharacter::ApplyAppearance(const FURPMonsterRow& Data, const FURPPathConfig& Path, int32 DifficultyLevel)
@@ -83,11 +118,11 @@ void AURPMonsterCharacter::ApplyAppearance(const FURPMonsterRow& Data, const FUR
         {
             GetMesh()->SetAnimInstanceClass(AnimClass);
         }
+        if (AnimClass) GetMesh()->SetAnimInstanceClass(AnimClass);
     }
 
     // 머티리얼 색상 변조
-    UMaterialInstanceDynamic* MID = GetMesh()->CreateAndSetMaterialInstanceDynamic(0);
-    if (MID)
+    if (UMaterialInstanceDynamic* MID = GetMesh()->CreateAndSetMaterialInstanceDynamic(0))
     {
         FLinearColor Color;
 
@@ -101,74 +136,39 @@ void AURPMonsterCharacter::ApplyAppearance(const FURPMonsterRow& Data, const FUR
         }
 
         MID->SetVectorParameterValue(TEXT("TintColor"), Color);
+        MID->SetVectorParameterValue(TEXT("TintColor"), FLinearColor(1, 1, 1));
     }
 }
 
 void AURPMonsterCharacter::ApplyStats(const FURPMonsterRow& Data, int32 DifficultyLevel)
 {
-    float LevelHpMultiplier = FMath::Pow(1.20f, DifficultyLevel - 1);
-    float LevelAtkMultiplier = FMath::Pow(1.15f, DifficultyLevel - 1);
-
-    MaxHp *= LevelHpMultiplier;
-    AttackPower *= LevelAtkMultiplier;
-
-    /*MoveSpeed = Data.MoveSpeed * Mult;
-
-    GetCharacterMovement()->MaxWalkSpeed = MoveSpeed*/
-}
-
-void AURPMonsterCharacter::ApplyAI(const FURPPathConfig& Path)
-{
-    if (!Path.DefaultMonsterBT.IsEmpty())
-    {
-        UBehaviorTree* BT = LoadObject<UBehaviorTree>(nullptr, *Path.DefaultMonsterBT);
-        if (BT)
-        {
-            if (AAIController* AIC = Cast<AAIController>(GetController()))
-            {
-                AIC->RunBehaviorTree(BT);
-            }
-        }
-    }
+    MaxHp = Data.MaxHp * FMath::Pow(1.2f, DifficultyLevel - 1);
+    AttackPower = Data.Attack * FMath::Pow(1.15f, DifficultyLevel - 1);
 }
 
 void AURPMonsterCharacter::SetTargetFromBlackboard(AActor* NewTargetActor)
 {
     if (!HasAuthority()) return;
 
-
-    // 1) NewTarget 유효성 검사
-    if (!IsValid(NewTargetActor))
-    {
-        ClearTarget();
-        return;
-    }
-
     AURPCharacterBase* NewTarget = Cast<AURPCharacterBase>(NewTargetActor);
 
-    // 2) 캐스팅 실패 / 자기 자신 / 이미 죽은 대상이면 타겟 해제
     if (!IsValid(NewTarget) || NewTarget == this || NewTarget->bIsDead)
     {
         ClearTarget();
         return;
     }
 
-    // 3) 현재 타겟과 동일하면 다시 바인딩할 필요 없음
     if (CurrentTarget == NewTarget)
         return;
 
-    // 4) 기존 타겟 언바인딩
     if (IsValid(CurrentTarget))
     {
-        CurrentTarget->OnCharacterDied.RemoveDynamic(
-            this, &AURPMonsterCharacter::OnTargetDied);
+        CurrentTarget->OnCharacterDied.RemoveDynamic(this, &AURPMonsterCharacter::OnTargetDied);
     }
 
-    // 5) 새 타겟 설정 + 구독
     CurrentTarget = NewTarget;
 
-    CurrentTarget->OnCharacterDied.AddDynamic(
-        this, &AURPMonsterCharacter::OnTargetDied);
+    CurrentTarget->OnCharacterDied.AddDynamic(this, &AURPMonsterCharacter::OnTargetDied);
 }
 
 void AURPMonsterCharacter::OnTargetDied(AURPCharacterBase* Dead)
@@ -176,18 +176,12 @@ void AURPMonsterCharacter::OnTargetDied(AURPCharacterBase* Dead)
     if (!HasAuthority()) return;
     if (Dead != CurrentTarget) return;
 
-    CurrentTarget = nullptr;
-
     ClearTarget();
 
-    // Blackboard 정리 + Return 상태로 전환
     if (AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(GetController()))
     {
-        UBlackboardComponent* BB = AI->GetBlackboardComponent();
-        if (BB)
+        if (UBlackboardComponent* BB = AI->GetBlackboardComponent())
         {
-            BB->SetValueAsObject("TargetActor", nullptr);
-            BB->SetValueAsBool("HasTarget", false);
             BB->SetValueAsEnum("AIState", (uint8)EAIState::Return);
         }
     }
@@ -195,84 +189,37 @@ void AURPMonsterCharacter::OnTargetDied(AURPCharacterBase* Dead)
 
 void AURPMonsterCharacter::ClearTarget()
 {
-    if (!HasAuthority())
-        return;
+    if (!HasAuthority()) return;
 
     if (IsValid(CurrentTarget))
     {
-        CurrentTarget->OnCharacterDied.RemoveDynamic(
-            this, &AURPMonsterCharacter::OnTargetDied);
+        CurrentTarget->OnCharacterDied.RemoveDynamic(this, &AURPMonsterCharacter::OnTargetDied);
     }
-
     CurrentTarget = nullptr;
 }
 
 void AURPMonsterCharacter::PerformBasicAttack(AActor* TargetActor)
 {
-    AURPCharacterBase* Target = Cast<AURPCharacterBase>(TargetActor);
-    if (!Target) return;
-
-    float FinalDamage = AttackPower;
-
-    // 방어력 시스템이 있다면 여기에 추가 가능
-    // FinalDamage = FinalDamage * (100 / (100 + Target->DefensePower));
-
-    UE_LOG(LogTemp, Log, TEXT("[MonsterAttack] %s → %s : %.1f damage"),
-        *GetName(), *Target->GetName(), FinalDamage);
-
-    Target->ApplyDamage(FinalDamage);
+    if (AURPCharacterBase* T = Cast<AURPCharacterBase>(TargetActor))
+    {
+        T->ApplyDamage(AttackPower);
+    }
 }
 
 void AURPMonsterCharacter::Die()
 {
-    if (!bIsActive)
-        return;
-
     ClearTarget();
-
     bIsActive = false;
 
-    // AI, 이동 끄기
-    GetCharacterMovement()->DisableMovement();
+    if (AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(GetController()))
+    {
+        if (AI->BrainComponent)
+        {
+            AI->BrainComponent->StopLogic("Dead");
+        }
+    }
+
+    SetActorHiddenInGame(true);
+    SetActorEnableCollision(false);
     DetachFromControllerPendingDestroy();
-
-    // Death 애니메이션 재생
-    if (DeathMontage)
-    {
-        UAnimInstance* AnimInst = GetMesh()->GetAnimInstance();
-
-        if (AnimInst)
-        {
-            AnimInst->Montage_Play(DeathMontage);
-            FOnMontageEnded EndDelegate;
-            EndDelegate.BindUObject(this, &AURPMonsterCharacter::OnDeathMontageEnded);
-
-            AnimInst->Montage_SetEndDelegate(EndDelegate, DeathMontage);
-            return;
-        }
-    }
-
-
-    // AI Reset
-    if (AAIController* AI = Cast<AAIController>(GetController()))
-    {
-        if (UBlackboardComponent* BB = AI->GetBlackboardComponent())
-        {
-            BB->ClearValue("TargetActor");
-            BB->SetValueAsBool("HasTarget", false);
-            BB->SetValueAsEnum("AIState", (uint8)EAIState::Dead);
-        }
-        AI->StopMovement();
-    }
-
-    // 몽타주 없으면 즉시 반환
-    OnDeathMontageEnded(nullptr, true);
-}
-
-void AURPMonsterCharacter::OnDeathMontageEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-    if (OwningZone && OwningZone->MonsterPool)
-    {
-        OwningZone->MonsterPool->ReturnMonster(this);
-    }
 }

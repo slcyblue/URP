@@ -16,6 +16,9 @@ public:
     int32 ApplyDotSkillId = 0;
 
     UPROPERTY()
+    UAnimMontage* SkillAnim = nullptr;
+
+    UPROPERTY()
     AURPCharacterBase* OwnerPC;
 
     virtual void Execute(class AURPCharacterBase* Owner) PURE_VIRTUAL(UURPSkillBase::Execute, );

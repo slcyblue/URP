@@ -34,7 +34,6 @@ AURPMonsterCharacter* UURPMonsterPool::GetPooledMonster()
 
         Mob->SetActorHiddenInGame(false);
         Mob->SetActorEnableCollision(true);
-        Mob->SetActive(true);
 
         return Mob;
     }
@@ -54,7 +53,6 @@ AURPMonsterCharacter* UURPMonsterPool::GetPooledMonster()
         {
             NewMob->SetActorHiddenInGame(false);
             NewMob->SetActorEnableCollision(true);
-            NewMob->SetActive(true);
             return NewMob;
         }
     }

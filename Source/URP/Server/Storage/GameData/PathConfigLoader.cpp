@@ -37,7 +37,6 @@ bool FPathConfigLoader::Load(const FString& FilePath, FGameDataPacket& OutPacket
         (*MonsterObj)->TryGetStringField(TEXT("MeshBase"), OutConfig.MonsterMeshBase);
         (*MonsterObj)->TryGetStringField(TEXT("AnimBP"), OutConfig.DefaultMonsterAnimBP);
         (*MonsterObj)->TryGetStringField(TEXT("DefaultBT"), OutConfig.DefaultMonsterBT);
-        (*MonsterObj)->TryGetStringField(TEXT("DefaultDeath"), OutConfig.DefaultMonsterDeath);
     }
 
     // Player Config

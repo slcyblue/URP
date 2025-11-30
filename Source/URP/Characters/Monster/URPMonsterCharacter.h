@@ -2,18 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "Characters/Common/URPCharacterBase.h"
-#include "Animations/URPPlayerAnimInstance.h"
-#include "Types/URPGameTypes.h"
-#include "Core/GamePlay/Flow/World/URPMonsterSpawnZone.h"
-#include "Core/GamePlay/Mechanics/Skill/System/URPSkillComponent.h"
+#include "URPGameTypes.h"
 #include "URPMonsterCharacter.generated.h"
 
-/**
- * 플레이어 전용 캐릭터 클래스
- * - 입력 처리
- * - 카메라 제어
- * - UI 연동
- */
+class AURPMonsterAIController;
+class AURPMonsterSpawnZone;
+
 UCLASS()
 class URP_API AURPMonsterCharacter : public AURPCharacterBase
 {
@@ -21,41 +15,32 @@ class URP_API AURPMonsterCharacter : public AURPCharacterBase
 
 public:
     AURPMonsterCharacter();
-    
+
+    virtual void BeginPlay() override;
     virtual void Die();
-    virtual void OnDeathMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-    void PerformBasicAttack(AActor* TargetActor);
-
+    void InitializeFromMonsterData(const FString MonsterName, int32 DifficultyLevel);
     void SetActive(bool bActive);
     bool IsActive() const { return bIsActive; }
 
-    void InitializeFromMonsterData(const FString MonsterName, int32 DifficultyLevel);
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
-    AURPCharacterBase* CurrentTarget = nullptr;
-
+    // Target
     void SetTargetFromBlackboard(AActor* NewTargetActor);
-
+    void ClearTarget();
     UFUNCTION()
     void OnTargetDied(AURPCharacterBase* Dead);
 
-    void ClearTarget();
+    // Attack
+    void PerformBasicAttack(AActor* TargetActor);
 
     UPROPERTY()
-    AURPMonsterSpawnZone* OwningZone;
+    AURPCharacterBase* CurrentTarget = nullptr;
 
-protected:
-    virtual void BeginPlay() override;
+    UPROPERTY()
+    AURPMonsterSpawnZone* OwningZone = nullptr;
 
 private:
     bool bIsActive = false;
 
     void ApplyAppearance(const FURPMonsterRow& Data, const FURPPathConfig& Path, int32 DifficultyLevel);
     void ApplyStats(const FURPMonsterRow& Data, int32 DifficultyLevel);
-    void ApplyAI(const FURPPathConfig& Path);
-
-    /** 몬스터 Death 몽타주 */
-    UPROPERTY(EditAnywhere, Category = "Animation")
-    UAnimMontage* DeathMontage;
 };

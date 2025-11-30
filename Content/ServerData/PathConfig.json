@@ -6,8 +6,7 @@
     "MeshBase": "/Game/Characters/Monsters/",
 
     "AnimBP": "/Game/Blueprints/Monster/ABP_MonsterCharacter.ABP_MonsterCharacter_C",
-    "DefaultBT": "/Game/AI/BT_Monster_Default",
-    "DefaultDeath": "/Game/Animations/Monster/DefaultDeath",
+    "DefaultBT": "/Game/AI/BT_Monster",
 
     "BossBPName": "BP_MonsterBossCharacter",
     "EliteBPName": "BP_MonsterEliteCharacter"

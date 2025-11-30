@@ -2,6 +2,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 #include "Characters/Monster/URPMonsterCharacter.h"
+#include <Characters/Player/URPPlayerCharacter.h>
 
 UBTService_FindTarget::UBTService_FindTarget()
 {
@@ -11,51 +12,66 @@ UBTService_FindTarget::UBTService_FindTarget()
 
 void UBTService_FindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-    if (!OwnerComp.GetAIOwner() || !OwnerComp.GetAIOwner()->HasAuthority()) return;
+    Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-    APawn* AIPawn = OwnerComp.GetAIOwner()->GetPawn();
+    AAIController* AI = OwnerComp.GetAIOwner();
+    if (!AI || !AI->HasAuthority()) return;
+
+    APawn* AIPawn = AI->GetPawn();
     if (!AIPawn) return;
 
     UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
     if (!BB) return;
 
-    FName TargetKey = "TargetActor";
+    // 상태 체크 (Idle/Patrol일 때만)
+    EAIState State = (EAIState)BB->GetValueAsEnum("AIState");
+    if (State != EAIState::Idle && State != EAIState::Patrol)
+        return;
 
-    // 이미 타겟 있으면 패스
-    if (BB->GetValueAsObject(TargetKey)) return;
+    BB->SetValueAsObject("TargetActor", nullptr);
+    BB->SetValueAsBool("HasTarget", false);
 
-    // 플레이어 검색
-    AActor* ClosestTarget = nullptr;
+    FVector Origin = AIPawn->GetActorLocation();
+
+    TArray<FOverlapResult> Results;
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(AIPawn);
+
+    bool bHit = AIPawn->GetWorld()->OverlapMultiByObjectType(
+        Results,
+        Origin,
+        FQuat::Identity,
+        FCollisionObjectQueryParams(ECC_Pawn),
+        FCollisionShape::MakeSphere(SearchRadius),
+        QueryParams
+    );
+
+    if (!bHit) return;
+
     float BestDist = FLT_MAX;
+    AURPPlayerCharacter* BestTarget = nullptr;
 
-    for (FConstPlayerControllerIterator It = AIPawn->GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    for (auto& R : Results)
     {
-        APlayerController* PC = It->Get();
-        if (!PC || !PC->GetPawn()) continue;
+        AURPPlayerCharacter* Candidate = Cast<AURPPlayerCharacter>(R.GetActor());
+        if (!Candidate || Candidate == AIPawn || Candidate->bIsDead) continue;
 
-        float Dist = FVector::Dist(AIPawn->GetActorLocation(), PC->GetPawn()->GetActorLocation());
-        if (Dist < BestDist && Dist <= SearchRadius)
+        float Dist = FVector::Dist(Origin, Candidate->GetActorLocation());
+        if (Dist < BestDist)
         {
             BestDist = Dist;
-            ClosestTarget = PC->GetPawn();
+            BestTarget = Candidate;
         }
     }
 
-    if (ClosestTarget)
+    if (BestTarget)
     {
-        BB->SetValueAsObject(TargetKey, ClosestTarget);
+        BB->SetValueAsObject("TargetActor", BestTarget);
         BB->SetValueAsBool("HasTarget", true);
 
-        if (AURPMonsterCharacter* Monster = Cast<AURPMonsterCharacter>(AIPawn))
+        if (AURPMonsterCharacter* M = Cast<AURPMonsterCharacter>(AIPawn))
         {
-            if (IsValid(ClosestTarget))
-            {
-                Monster->SetTargetFromBlackboard(ClosestTarget);
-            }
-            else
-            {
-                Monster->ClearTarget();
-            }
+            M->SetTargetFromBlackboard(BestTarget);
         }
     }
 }

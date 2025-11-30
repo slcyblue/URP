@@ -105,7 +105,7 @@ void UURPCombatComponent::Skill(int32 SkillId)
         ServerSkill(SkillId, ClientTime);
     }
 
-    OwnerPC->PlaySkill(); // 애니메이션은 로컬
+    OwnerPC->PlaySkill(SkillId); // 애니메이션은 로컬
 }
 
 void UURPCombatComponent::UseSkillSlot(int32 SlotIndex)

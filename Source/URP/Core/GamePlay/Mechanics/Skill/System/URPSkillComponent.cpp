@@ -100,6 +100,7 @@ void UURPSkillComponent::InitializeSkills(EURPClassType ClassType)
 
         Skill->SkillId = Row.SkillId;
         Skill->Cooldown = Row.Cooldown;
+        Skill->SkillAnim = Row.SkillAnim;
 
         RegisterSkill(Skill->SkillId, Skill);
         UE_LOG(LogTemp, Log, TEXT("[SkillComp] Registered skill %s (Id=%d)"),

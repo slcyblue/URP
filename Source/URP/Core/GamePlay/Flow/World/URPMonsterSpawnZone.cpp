@@ -4,6 +4,7 @@
 #include "Characters/Monster/URPMonsterCharacter.h"
 #include "GameFramework/Character.h"
 #include "Core/Subsystems/Data/URPGameDataSubsystem.h"
+#include <Characters/Monster/URPMonsterAIController.h>
 
 AURPMonsterSpawnZone::AURPMonsterSpawnZone()
 {
@@ -117,6 +118,8 @@ void AURPMonsterSpawnZone::SpawnMissingMonsters()
         // 몬스터 데이터 초기화
         Mob->InitializeFromMonsterData(RandomName, ZoneLevel);
         Mob->OwningZone = this;
+
+        Mob->SetActive(true);
 
         CurrentMonsters.Add(Mob);
     }

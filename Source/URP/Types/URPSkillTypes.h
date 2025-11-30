@@ -27,6 +27,8 @@ struct URP_API FURPSkillRow
     UPROPERTY() FString SkillName;
     UPROPERTY() EURPSkillType SkillType;
     UPROPERTY() EURPClassType RequiredClass;
+    UPROPERTY() FString SkillAnimPath;
+    UPROPERTY() UAnimMontage* SkillAnim = nullptr;
     UPROPERTY() float Cooldown;
     UPROPERTY() int32 ApplyDotSkillId;
 

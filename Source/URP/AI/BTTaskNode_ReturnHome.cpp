@@ -25,7 +25,7 @@ EBTNodeResult::Type UBTTaskNode_ReturnHome::ExecuteTask(UBehaviorTreeComponent& 
     const float Distance = FVector::Dist(Pawn->GetActorLocation(), Home);
 
     // Home에 거의 도착함 → Idle로 전환
-    if (Distance < 60.f)
+    if (Distance < 10.f)
     {
         BB->SetValueAsEnum("AIState", (uint8)EAIState::Idle);
         BB->SetValueAsBool("HasTarget", false);

@@ -143,6 +143,21 @@ void UURPGameDataSubsystem::LoadSkillData(const FGameDataPacket& Packet)
             }
         }
 
+        if (!Row.SkillAnim && !Row.SkillAnimPath.IsEmpty())
+        {
+            UAnimMontage* Montage = Cast<UAnimMontage>(
+                StaticLoadObject(UAnimMontage::StaticClass(), nullptr, *Row.SkillAnimPath));
+
+            if (!Montage)
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to load SkillAnimPath: %s"), *Row.SkillAnimPath);
+            }
+            else
+            {
+                Row.SkillAnim = Montage;
+            }
+        }
+
         SkillTable.Add(MoveTemp(Row));
     }
 
@@ -158,7 +173,6 @@ void UURPGameDataSubsystem::LoadClassData(const FGameDataPacket& Packet)
 
     for (FURPClassData& Row : ClassTable)
     {
-        // 필요하다면 여기서 AnimClassPath -> AnimClass 로딩 (네가 Struct에 AnimClassPath를 넣었다는 가정)
         if (!Row.AnimClass && !Row.AnimClassPath.IsEmpty())
         {
             UClass* AnimBPClass = LoadClass<UAnimInstance>(nullptr, *Row.AnimClassPath);
@@ -170,6 +184,36 @@ void UURPGameDataSubsystem::LoadClassData(const FGameDataPacket& Packet)
             else
             {
                 Row.AnimClass = AnimBPClass;
+            }
+        }
+
+        if (!Row.AttackAnim && !Row.AttackAnimPath.IsEmpty())
+        {
+            UAnimMontage* AttackMontage = Cast<UAnimMontage>(
+                StaticLoadObject(UAnimMontage::StaticClass(), nullptr, *Row.AttackAnimPath));
+
+            if (!AttackMontage)
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to load AttackAnim: %s"), *Row.AttackAnimPath);
+            }
+            else
+            {
+                Row.AttackAnim = AttackMontage;
+            }
+        }
+
+        if (!Row.DeathAnim && !Row.DeathAnimPath.IsEmpty())
+        {
+            UAnimMontage* DeathMontage = Cast<UAnimMontage>(
+                StaticLoadObject(UAnimMontage::StaticClass(), nullptr, *Row.DeathAnimPath));
+
+            if (!DeathMontage)
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to load DeathAnim: %s"), *Row.DeathAnimPath);
+            }
+            else
+            {
+                Row.DeathAnim = DeathMontage;
             }
         }
     }

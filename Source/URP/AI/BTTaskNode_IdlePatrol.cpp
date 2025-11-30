@@ -2,6 +2,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NavigationSystem.h"
+#include <URPCommonEnums.h>
 
 UBTTaskNode_IdlePatrol::UBTTaskNode_IdlePatrol()
 {
@@ -18,15 +19,14 @@ EBTNodeResult::Type UBTTaskNode_IdlePatrol::ExecuteTask(UBehaviorTreeComponent& 
 
     const FVector Home = BB->GetValueAsVector("HomeLocation");
 
-    // NavMesh에서 랜덤 위치 찾기
-    FNavLocation RandomLoc;
     UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(AI->GetWorld());
     if (!NavSys) return EBTNodeResult::Failed;
 
+    FNavLocation RandomLoc;
     if (NavSys->GetRandomPointInNavigableRadius(Home, PatrolRadius, RandomLoc))
     {
         BB->SetValueAsVector("MoveDestination", RandomLoc.Location);
-        AI->MoveToLocation(RandomLoc.Location, 5.f, true);
+        BB->SetValueAsEnum("AIState", (uint8)EAIState::Patrol);
         return EBTNodeResult::Succeeded;
     }
 
