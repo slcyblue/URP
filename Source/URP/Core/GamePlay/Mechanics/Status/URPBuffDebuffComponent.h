@@ -5,27 +5,39 @@
 #include "Types/URPSkillTypes.h"
 #include "URPBuffDebuffComponent.generated.h"
 
+class AURPCharacterBase;
+
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class URP_API UURPBuffDebuffComponent : public UActorComponent
 {
     GENERATED_BODY()
 
 public:
-    // ====== Apply API ======
+    UURPBuffDebuffComponent();
+
+    virtual void BeginPlay() override;
+    virtual void TickComponent(float DeltaTime, ELevelTick, FActorComponentTickFunction*) override;
+
+    // ----- 적용 -----
     void ApplyBuff(EURPBuffType Type, float Value, float Duration);
     void ApplyDebuff(EURPDebuffType Type, float Value, float Duration);
     void ApplyDOT(float TickDamage, float TickInterval, float Duration);
 
-    // ====== 쿼리 (스탯 반영용) ======
-    float GetAttackMultiplier() const;      // 기본 1.0
-    float GetDefenseMultiplier() const;     // 기본 1.0
-    float GetMoveSpeedMultiplier() const;   // 기본 1.0
-    float GetSkillHasteMultiplier() const;  // 기본 1.0 (쿨감)
+    // ----- 원본 값 반환 (StatComponent가 최종 계산) -----
+    float GetTotalBuffValue(EURPBuffType Type) const;
+    float GetTotalDebuffValue(EURPDebuffType Type) const;
 
-    bool  IsStunned() const;
-    bool  IsSilenced() const;
+    float GetFlat(EURPBuffType Type) const;      // Flat형 증가량
+    float GetPercent(EURPBuffType Type) const;   // Percent형 증가량 (0.2 = +20%)
 
-protected:
+    bool IsStunned() const;
+    bool IsSilenced() const;
+
+private:
+    UPROPERTY()
+    AURPCharacterBase* OwnerCharacter = nullptr;
+
     UPROPERTY()
     TArray<FURPActiveBuff> ActiveBuffs;
 
@@ -35,6 +47,8 @@ protected:
     UPROPERTY()
     TArray<FURPActiveDOT> ActiveDOTs;
 
-private:
-    static float PercentToRate(float PercentValue);
+    static float PercentToRate(float PercentValue)
+    {
+        return PercentValue * 0.01f;
+    }
 };

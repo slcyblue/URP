@@ -9,7 +9,8 @@
     "BaseMaxHp": 250,
     "BaseAttack": 25,
     "BaseDefense": 8,
-    "BaseMoveSpeed": 550
+    "BaseMoveSpeed": 550,
+    "BaseAttackSpeed": 0.8
   },
   {
     "ClassType": "Knight",
@@ -21,7 +22,8 @@
     "BaseMaxHp": 220,
     "BaseAttack": 15,
     "BaseDefense": 15,
-    "BaseMoveSpeed": 520
+    "BaseMoveSpeed": 520,
+    "BaseAttackSpeed": 1.0
   },
   {
     "ClassType": "Mage",
@@ -33,7 +35,8 @@
     "BaseMaxHp": 140,
     "BaseAttack": 35,
     "BaseDefense": 3,
-    "BaseMoveSpeed": 600
+    "BaseMoveSpeed": 600,
+    "BaseAttackSpeed": 0.8
   },
   {
     "ClassType": "Rogue",
@@ -45,6 +48,7 @@
     "BaseMaxHp": 160,
     "BaseAttack": 22,
     "BaseDefense": 5,
-    "BaseMoveSpeed": 680
+    "BaseMoveSpeed": 680,
+    "BaseAttackSpeed": 1.2
   }
 ]

@@ -60,6 +60,21 @@ public:
     void PlaySkill(int32 SkillId);
     
     virtual void Die();
+    virtual void HandleMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    bool bIsAttacking = false;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    bool bAttackDelay = false;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    bool bIsUsingSkill = false;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    bool bIsMoving = false;
+
+    FTimerHandle AttackDelayHandle;
 
 protected:
     virtual void BeginPlay() override;
@@ -67,8 +82,5 @@ protected:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-    // 카메라 셋팅
-    void UpdateCameraTransparency(float DeltaTime);
-
-    UURPPlayerAnimInstance* Anim;
+    void OnAttackDelayEnd();
 };

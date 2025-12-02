@@ -61,14 +61,33 @@ struct URP_API FURPSkillRow
     UPROPERTY() float DebuffValue;
 };
 
+
 USTRUCT()
 struct URP_API FURPActiveBuff
 {
     GENERATED_BODY()
 
-    UPROPERTY() EURPBuffType Type;
-    UPROPERTY() float Value;
-    UPROPERTY() float RemainingTime;
+    UPROPERTY()
+    EURPBuffType Type = EURPBuffType::None;
+
+    UPROPERTY()
+    float Value = 0.f;        // Flat or Percent (버프 종류에 따라 용도 다름)
+
+    UPROPERTY()
+    float Duration = 0.f;
+
+    UPROPERTY()
+    float RemainingTime = 0.f;
+
+    FURPActiveBuff() {}
+
+    FURPActiveBuff(EURPBuffType InType, float InValue, float InDuration)
+    {
+        Type = InType;
+        Value = InValue;
+        Duration = InDuration;
+        RemainingTime = InDuration;
+    }
 };
 
 USTRUCT()
@@ -76,33 +95,52 @@ struct URP_API FURPActiveDebuff
 {
     GENERATED_BODY()
 
-    UPROPERTY() EURPDebuffType Type;
-    UPROPERTY() float Value;
-    UPROPERTY() float RemainingTime;
-};
+    UPROPERTY()
+    EURPDebuffType Type = EURPDebuffType::None;
 
+    UPROPERTY()
+    float Value = 0.f;
+
+    UPROPERTY()
+    float Duration = 0.f;
+
+    UPROPERTY()
+    float RemainingTime = 0.f;
+
+    FURPActiveDebuff() {}
+
+    FURPActiveDebuff(EURPDebuffType InType, float InValue, float InDuration)
+    {
+        Type = InType;
+        Value = InValue;
+        Duration = InDuration;
+        RemainingTime = InDuration;
+    }
+};
 
 USTRUCT()
 struct URP_API FURPActiveDOT
 {
     GENERATED_BODY()
 
-    UPROPERTY() float TickDamage = 0.f;
-    UPROPERTY() float TickInterval = 1.f;
-    UPROPERTY() float RemainingTime = 0.f;
+    UPROPERTY()
+    float TickDamage = 0.f;
 
-    // 내부용
+    UPROPERTY()
+    float TickInterval = 1.f;
+
+    UPROPERTY()
+    float RemainingTime = 0.f;
+
     float ElapsedForTick = 0.f;
-};
 
-USTRUCT()
-struct URP_API FDOTData
-{
-    GENERATED_BODY()
+    FURPActiveDOT() {}
 
-    UPROPERTY() int32 SkillId;
-    UPROPERTY() FString DotType;
-    UPROPERTY() float Duration;
-    UPROPERTY() float TickInterval;
-    UPROPERTY() float DamagePerTick;
+    FURPActiveDOT(float Damage, float Interval, float Duration)
+    {
+        TickDamage = Damage;
+        TickInterval = Interval;
+        RemainingTime = Duration;
+        ElapsedForTick = 0.f;
+    }
 };

@@ -64,18 +64,9 @@ void UURPClassComponent::ApplyClassToCharacter()
         PC->StatComponent->SetBaseStats(
             ClassData->BaseMaxHp,
             ClassData->BaseAttack,
-            ClassData->BaseDefense
+            ClassData->BaseDefense,
+            ClassData->BaseAttackSpeed,
+            ClassData->BaseMoveSpeed
         );
     }
-    else
-    {
-        // 혹시 StatComponent가 없다면, 기존 방식으로라도 동작하게
-        PC->BaseMaxHp = ClassData->BaseMaxHp;
-        PC->BaseAttack = ClassData->BaseAttack;
-        PC->BaseDefense = ClassData->BaseDefense;
-        PC->RecalculateStats();
-    }
-
-    UE_LOG(LogTemp, Log, TEXT("[Class] Base stats set by class: MaxHp=%lld, Attack=%.1f"),
-        PC->MaxHp, PC->AttackPower);
 }

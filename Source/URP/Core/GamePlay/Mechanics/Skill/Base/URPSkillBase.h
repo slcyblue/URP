@@ -35,6 +35,6 @@ public:
 
     virtual float GetDamage(AURPCharacterBase* Owner) const
     {
-        return Owner->AttackPower;
+        return Owner->GetAttackPower();
     }
 };

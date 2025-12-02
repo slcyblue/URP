@@ -74,7 +74,7 @@ float UURPCombatComponent::GetFinalDamage() const
 {
     if (!OwnerPC) return 0.f;
 
-    float BaseDamage = OwnerPC->AttackPower;
+    float BaseDamage = OwnerPC->GetAttackPower();
 
     // 직업별 보정도 가능
     if (ClassComp && ClassComp->GetClassData()->ClassType == EURPClassType::Rogue)

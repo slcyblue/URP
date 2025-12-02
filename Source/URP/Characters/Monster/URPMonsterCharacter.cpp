@@ -142,8 +142,9 @@ void AURPMonsterCharacter::ApplyAppearance(const FURPMonsterRow& Data, const FUR
 
 void AURPMonsterCharacter::ApplyStats(const FURPMonsterRow& Data, int32 DifficultyLevel)
 {
-    MaxHp = Data.MaxHp * FMath::Pow(1.2f, DifficultyLevel - 1);
-    AttackPower = Data.Attack * FMath::Pow(1.15f, DifficultyLevel - 1);
+    float MaxHp = Data.MaxHp * FMath::Pow(1.2f, DifficultyLevel - 1);
+    float AttackPower = Data.Attack * FMath::Pow(1.15f, DifficultyLevel - 1);
+    StatComponent->SetBaseStats(MaxHp, AttackPower);
 }
 
 void AURPMonsterCharacter::SetTargetFromBlackboard(AActor* NewTargetActor)
@@ -195,6 +196,7 @@ void AURPMonsterCharacter::ClearTarget()
     {
         CurrentTarget->OnCharacterDied.RemoveDynamic(this, &AURPMonsterCharacter::OnTargetDied);
     }
+
     CurrentTarget = nullptr;
 }
 
@@ -202,7 +204,7 @@ void AURPMonsterCharacter::PerformBasicAttack(AActor* TargetActor)
 {
     if (AURPCharacterBase* T = Cast<AURPCharacterBase>(TargetActor))
     {
-        T->ApplyDamage(AttackPower);
+        T->ApplyDamage(GetAttackPower());
     }
 }
 
@@ -222,4 +224,11 @@ void AURPMonsterCharacter::Die()
     SetActorHiddenInGame(true);
     SetActorEnableCollision(false);
     DetachFromControllerPendingDestroy();
+}
+
+void AURPMonsterCharacter::HandleMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+    //bIsAttacking = false;
+
+    // AI 관련 작업이 있으면 여기
 }

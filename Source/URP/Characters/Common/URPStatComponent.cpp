@@ -1,4 +1,5 @@
 #include "URPStatComponent.h"
+#include "Core/GamePlay/Mechanics/Status/URPBuffDebuffComponent.h"
 #include "Characters/Common/URPCharacterBase.h"
 
 UURPStatComponent::UURPStatComponent()
@@ -11,29 +12,17 @@ void UURPStatComponent::BeginPlay()
     Super::BeginPlay();
 
     OwnerCharacter = Cast<AURPCharacterBase>(GetOwner());
-    SyncFromOwnerIfNeeded();
+    BuffComp = OwnerCharacter ? OwnerCharacter->BuffDebuffComp : nullptr;
     Recalculate();
 }
 
-void UURPStatComponent::SyncFromOwnerIfNeeded()
+void UURPStatComponent::SetBaseStats(float InMaxHp, float InAttack, float InDefense, float InAttackSpeed, float InMoveSpeed)
 {
-    if (!OwnerCharacter) return;
-
-    // 만약 기존 CharacterBase에 초깃값이 세팅되어 있다면 그것을 Base로 가져올 수 있음
-    BaseMaxHp = OwnerCharacter->BaseMaxHp;
-    BaseAttack = OwnerCharacter->BaseAttack;
-    BaseDefense = OwnerCharacter->BaseDefense;
-
-    EquipMaxHp = OwnerCharacter->EquipMaxHp;
-    EquipAttack = OwnerCharacter->EquipAttack;
-    EquipDefense = OwnerCharacter->EquipDefense;
-}
-
-void UURPStatComponent::SetBaseStats(int64 InBaseMaxHp, float InBaseAttack, float InBaseDefense)
-{
-    BaseMaxHp = InBaseMaxHp;
-    BaseAttack = InBaseAttack;
-    BaseDefense = InBaseDefense;
+    BaseMaxHp = InMaxHp;
+    BaseAttack = InAttack;
+    BaseDefense = InDefense;
+    BaseAttackSpeed = InAttackSpeed;
+    BaseMoveSpeed = InMoveSpeed;
 
     Recalculate();
 }
@@ -47,33 +36,72 @@ void UURPStatComponent::SetEquipStats(int64 InEquipMaxHp, float InEquipAttack, f
     Recalculate();
 }
 
-void UURPStatComponent::SetBuffStats(int64 InBuffMaxHp, float InBuffAttack, float InBuffDefense)
-{
-    BuffMaxHp = InBuffMaxHp;
-    BuffAttack = InBuffAttack;
-    BuffDefense = InBuffDefense;
-
-    Recalculate();
-}
 
 void UURPStatComponent::Recalculate()
 {
-    if (!OwnerCharacter) return;
+    if (!OwnerCharacter || !BuffComp)
+        return;
 
-    // 일단은 단순 합산: 나중에 퍼센트 버프가 필요하면 여기서 곱연산 추가
-    FinalMaxHp = BaseMaxHp + EquipMaxHp + BuffMaxHp;
-    FinalAttack = BaseAttack + EquipAttack + BuffAttack;
-    FinalDefense = BaseDefense + EquipDefense + BuffDefense;
+    // ============================================================
+    // 1) Attack
+    // ============================================================
+    float BuffAtkFlat = BuffComp->GetFlat(EURPBuffType::AttackUp);
+    float BuffAtkPercent = BuffComp->GetPercent(EURPBuffType::AttackUp);
 
-    // CharacterBase에 반영
-    OwnerCharacter->MaxHp = FinalMaxHp;
-    OwnerCharacter->AttackPower = FinalAttack;
-    OwnerCharacter->DefensePower = FinalDefense;
+    float DebuffAtkFlat = BuffComp->GetTotalDebuffValue(EURPDebuffType::AttackDown);
+    float DebuffAtkPercent = BuffComp->GetTotalDebuffValue(EURPDebuffType::AttackDown) * 0.01f;
 
-    // 현재 HP 보정
-    if (OwnerCharacter->CurrentHp > FinalMaxHp)
-        OwnerCharacter->CurrentHp = FinalMaxHp;
+    FinalAttack =
+        (BaseAttack + EquipAttack + BuffAtkFlat - DebuffAtkFlat)
+        * (1.f + BuffAtkPercent - DebuffAtkPercent);
 
-    UE_LOG(LogTemp, Log, TEXT("[StatComponent] Recalc: MaxHp=%lld, Atk=%.1f, Def=%.1f"),
-        FinalMaxHp, FinalAttack, FinalDefense);
+    FinalAttack = FMath::Max(FinalAttack, 1.f); // 최소 1 공격력 보정
+
+
+    // ============================================================
+    // 2) Defense
+    // ============================================================
+    float BuffDefFlat = BuffComp->GetFlat(EURPBuffType::DefenseUp);
+    float BuffDefPercent = BuffComp->GetPercent(EURPBuffType::DefenseUp);
+
+    float DebuffDefFlat = BuffComp->GetTotalDebuffValue(EURPDebuffType::DefenseDown);
+    float DebuffDefPercent = BuffComp->GetTotalDebuffValue(EURPDebuffType::DefenseDown) * 0.01f;
+
+    FinalDefense =
+        (BaseDefense + EquipDefense + BuffDefFlat - DebuffDefFlat)
+        * (1.f + BuffDefPercent - DebuffDefPercent);
+
+    FinalDefense = FMath::Max(FinalDefense, 0.f);
+
+
+    // ============================================================
+    // 3) MoveSpeed (슬로우 포함)
+    // ============================================================
+    float BuffMoveFlat = BuffComp->GetFlat(EURPBuffType::MoveSpeedUp);
+    float BuffMovePercent = BuffComp->GetPercent(EURPBuffType::MoveSpeedUp);
+
+    float DebuffMoveFlat = BuffComp->GetTotalDebuffValue(EURPDebuffType::MoveSpeedDown);
+    float DebuffMovePercent = BuffComp->GetTotalDebuffValue(EURPDebuffType::MoveSpeedDown) * 0.01f;
+
+    FinalMoveSpeed =
+        (BaseMoveSpeed + EquipMoveSpeed + BuffMoveFlat - DebuffMoveFlat)
+        * (1.f + BuffMovePercent - DebuffMovePercent);
+
+    FinalMoveSpeed = FMath::Clamp(FinalMoveSpeed, 150.f, 2000.f);
+
+
+    // ============================================================
+    // 4) AttackSpeed (공속 버프/공속 디버프 모두 포함)
+    // ============================================================
+    float BuffASFlat = BuffComp->GetFlat(EURPBuffType::AttackSpeedUp);
+    float BuffASPercent = BuffComp->GetPercent(EURPBuffType::AttackSpeedUp);
+
+    float DebuffASFlat = BuffComp->GetTotalDebuffValue(EURPDebuffType::AttackSpeedDown);
+    float DebuffASPercent = BuffComp->GetTotalDebuffValue(EURPDebuffType::AttackSpeedDown) * 0.01f;
+
+    FinalAttackSpeed =
+        (BaseAttackSpeed + EquipAttackSpeed + BuffASFlat - DebuffASFlat)
+        * (1.f + BuffASPercent - DebuffASPercent);
+
+    FinalAttackSpeed = FMath::Clamp(FinalAttackSpeed, 0.1f, 5.f);
 }

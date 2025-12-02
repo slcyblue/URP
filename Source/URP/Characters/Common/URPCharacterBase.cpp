@@ -1,11 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Characters/Common/URPCharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Core/GamePlay/Mechanics/Status/URPBuffDebuffComponent.h"
+#include "Core/GamePlay/Mechanics/Skill/System/URPSkillComponent.h"
+#include "Characters/Common/URPAnimInstance.h"
 #include "Characters/Monster/URPMonsterCharacter.h"
 #include "Characters/Player/URPPlayerCharacter.h"
-#include "Characters/Common/URPStatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -29,17 +28,21 @@ void AURPCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-    CurrentHp = MaxHp;
-	
+    if (StatComponent) 
+    {
+        CurrentHp = StatComponent->GetFinalMaxHp();
+    }
+
+    AnimInstance = Cast<UURPAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 void AURPCharacterBase::ApplyDamage(float Amount)
 {
     CurrentHp -= FMath::RoundToInt(Amount);
-    CurrentHp = FMath::Clamp<int64>(CurrentHp, 0, MaxHp);
+    CurrentHp = FMath::Clamp<int64>(CurrentHp, 0, StatComponent->GetFinalMaxHp());
 
-    UE_LOG(LogTemp, Log, TEXT("[%s] Took Damage: %.1f | HP: %lld / %lld"),
-        *GetName(), Amount, CurrentHp, MaxHp);
+    UE_LOG(LogTemp, Log, TEXT("[%s] Took Damage: %.1f | HP: %lld / %.1f"),
+        *GetName(), Amount, CurrentHp, StatComponent->GetFinalMaxHp());
 
     if (CurrentHp <= 0 && !bIsDead)
     {
@@ -68,4 +71,9 @@ void AURPCharacterBase::RecalculateStats()
         StatComponent->Recalculate();
         return;
     }
+}
+
+void AURPCharacterBase::HandleMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+    // 기본 동작 없음
 }

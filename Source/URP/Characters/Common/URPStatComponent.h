@@ -2,9 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include <URPGameTypes.h>
 #include "URPStatComponent.generated.h"
 
 class AURPCharacterBase;
+class UURPBuffDebuffComponent;
 
 /**
  * 스탯 전담 컴포넌트
@@ -20,21 +22,19 @@ public:
     UURPStatComponent();
 
     /** 클래스 변경 시 기본 스탯 설정 */
-    void SetBaseStats(int64 InBaseMaxHp, float InBaseAttack, float InBaseDefense);
+    void SetBaseStats(float InMaxHp = 100, float InAttack = 10, float InDefense = 5, float InAttackSpeed = 1, float InMoveSpeed =1);
 
     /** 장비 변경 시 장비 스탯 설정 (EquipmentComponent에서 호출) */
     void SetEquipStats(int64 InEquipMaxHp, float InEquipAttack, float InEquipDefense);
-
-    /** 추후 Buff/Debuff용으로 확장 가능(지금은 0으로 두고 시작해도 됨) */
-    void SetBuffStats(int64 InBuffMaxHp, float InBuffAttack, float InBuffDefense);
 
     /** 최종 스탯 재계산 (Class / Equip / Buff 변경시 호출) */
     void Recalculate();
 
     /** 최종 스탯 Getter (필요시 외부에서 직접 사용 가능) */
-    int64  GetFinalMaxHp() const { return FinalMaxHp; }
-    float  GetFinalAttack() const { return FinalAttack; }
-    float  GetFinalDefense() const { return FinalDefense; }
+    float GetFinalMaxHp() const { return FinalMaxHp; }
+    float GetFinalAttack() const { return FinalAttack; }
+    float GetFinalDefense() const { return FinalDefense; }
+    float GetFinalAttackSpeed() const { return FinalAttackSpeed; }
 
 protected:
     virtual void BeginPlay() override;
@@ -44,25 +44,27 @@ private:
     UPROPERTY()
     AURPCharacterBase* OwnerCharacter = nullptr;
 
-    // ===== Base (클래스 등에서 제공) =====
-    int64 BaseMaxHp = 100;
+    UPROPERTY()
+    UURPBuffDebuffComponent* BuffComp = nullptr;
+
+    // 최종 스탯
+    float FinalMaxHp = 0.f;
+    float FinalAttack = 0.f;
+    float FinalDefense = 0.f;
+    float FinalMoveSpeed = 600.f;
+    float FinalAttackSpeed = 1.f;
+
+    // 기본 스탯
+    float BaseMaxHp = 10.f;
     float BaseAttack = 10.f;
     float BaseDefense = 5.f;
+    float BaseMoveSpeed = 600.f;
+    float BaseAttackSpeed = 1.f;
 
-    // ===== Equip (장비에서 제공) =====
-    int64 EquipMaxHp = 0;
+    // 장비 스탯
+    float EquipMaxHp = 0.f;
     float EquipAttack = 0.f;
     float EquipDefense = 0.f;
-
-    // ===== Buff / Debuff (추가 스탯, 옵션용) =====
-    int64 BuffMaxHp = 0;
-    float BuffAttack = 0.f;
-    float BuffDefense = 0.f;
-
-    // ===== 최종 계산된 값 =====
-    int64 FinalMaxHp = 100;
-    float FinalAttack = 10.f;
-    float FinalDefense = 5.f;
-
-    void SyncFromOwnerIfNeeded();
+    float EquipMoveSpeed = 0.f;
+    float EquipAttackSpeed = 0.f;
 };

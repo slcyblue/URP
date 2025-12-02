@@ -4,6 +4,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/InputComponent.h"
+#include "Characters/Common/URPAnimInstance.h"
 #include "Core/GamePlay/Mechanics/Skill/Base/URPSkillBase.h"
 #include "AIController.h"
 
@@ -46,8 +47,6 @@ void AURPPlayerCharacter::BeginPlay()
     {
         CameraManager->InitializeCamera(CameraBoom, FollowCamera);
     }
-
-    Anim = Cast<UURPPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 
     bBeginPlayCompleted = true;
 
@@ -95,10 +94,10 @@ void AURPPlayerCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    if (Anim)
+    if (AnimInstance)
     {
-        Anim->Speed = GetVelocity().Size();
-        Anim->bIsMoving = Anim->Speed > 5.f;
+        AnimInstance-> Speed = GetVelocity().Size();
+        bIsMoving = AnimInstance-> Speed > 5.f;
     }
 }
 
@@ -119,7 +118,7 @@ void AURPPlayerCharacter::Die()
     UAnimMontage* DeathMontage = ClassComponent->GetClassData()->DeathAnim;
     if (DeathMontage != nullptr)
     {
-        float Duration = PlayAnimMontage(DeathMontage);
+        float Duration = AnimInstance->PlayNormalMontage(DeathMontage);
         UE_LOG(LogTemp, Warning, TEXT("Montage Duration = %.2f"), Duration);
     }
     else
@@ -135,24 +134,52 @@ void AURPPlayerCharacter::Die()
 
 void AURPPlayerCharacter::PlayAttack()
 {
-    UAnimMontage* AttackMontage = ClassComponent->GetClassData()->AttackAnim;
-    if (AttackMontage != nullptr)
+    if (bIsAttacking || bAttackDelay)
     {
-        float Duration = PlayAnimMontage(AttackMontage);
-        UE_LOG(LogTemp, Warning, TEXT("Montage Duration = %.2f"), Duration);
+        UE_LOG(LogTemp, Warning, TEXT("Attack ignored: still attacking or in delay"));
+        return;
     }
-    else
+
+    UAnimMontage* AttackMontage = ClassComponent->GetClassData()->AttackAnim;
+    if (!AttackMontage)
     {
         UE_LOG(LogTemp, Warning, TEXT("Failed to get default montage AttackMontage"));
+        return;
     }
+
+    // 상태 업데이트
+    bIsAttacking = true;
+    bAttackDelay = true;
+
+    float APS = GetAttackSpeed();
+    float Cooldown = 1.f / APS;
+
+    // 애니메이션 재생 속도 (APS 기반)
+    float PlayRate = APS / ClassComponent->GetClassData()->BaseAttackSpeed;
+
+    float Duration = AnimInstance->PlayCombatMontage(AttackMontage, PlayRate);
+
+    // 공격 가능 시점 타이머
+    GetWorldTimerManager().SetTimer(
+        AttackDelayHandle,
+        this,
+        &AURPPlayerCharacter::OnAttackDelayEnd,
+        Cooldown,
+        false
+    );
+}
+
+void AURPPlayerCharacter::OnAttackDelayEnd()
+{
+    bAttackDelay = false;
 }
 
 void AURPPlayerCharacter::PlaySkill(int32 SkillId)
 {
-    if (!Anim || !SkillComponent)
+    if (!AnimInstance || !SkillComponent)
         return;
 
-    Anim->bIsUsingSkill = true;
+    bIsUsingSkill = true;
 
     UURPSkillBase* Skill = SkillComponent->GetSkill(SkillId);
     if (!Skill)
@@ -165,8 +192,33 @@ void AURPPlayerCharacter::PlaySkill(int32 SkillId)
         return;
     }
 
-    // ACharacter has PlayAnimMontage()
-    float Duration = PlayAnimMontage(SkillMontage);
+    float FinalASPD = GetAttackSpeed();   // 예: 1.2
+    float Duration = AnimInstance->PlayCombatMontage(SkillMontage, FinalASPD);
 
     UE_LOG(LogTemp, Log, TEXT("[Player] Skill %d Montage Duration = %.2f"), SkillId, Duration);
+}
+
+void AURPPlayerCharacter::HandleMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+    // [1] 공격 몽타주
+    if (Montage == ClassComponent->GetClassData()->AttackAnim)
+    {
+        bIsAttacking = false;
+        return;
+    }
+
+    // [2] 사망 몽타주
+    if (Montage == ClassComponent->GetClassData()->DeathAnim)
+    {
+        // Respawn 가능
+        return;
+    }
+
+    // [3] 스킬 몽타주
+    /*if (SkillComponent && SkillComponent->IsSkillMontage(Montage))
+    {
+        SkillComponent->OnSkillMontageEnded(Montage);
+        bIsUsingSkill = false;
+        return;
+    }*/
 }

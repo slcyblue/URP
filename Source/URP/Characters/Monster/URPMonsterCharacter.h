@@ -38,6 +38,7 @@ public:
     UPROPERTY()
     AURPMonsterSpawnZone* OwningZone = nullptr;
 
+    virtual void HandleMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 private:
     bool bIsActive = false;
 

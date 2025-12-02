@@ -77,6 +77,7 @@ enum class EURPBuffType : uint8
     AttackUp,
     DefenseUp,
     MoveSpeedUp,
+    AttackSpeedUp,
     SkillHaste,
     Shield
 };
@@ -88,6 +89,7 @@ enum class EURPDebuffType : uint8
     AttackDown,
     DefenseDown,
     MoveSpeedDown,
+    AttackSpeedDown,
     Silence,
     Stun
 };

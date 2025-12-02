@@ -119,6 +119,9 @@ struct FURPClassData
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     float BaseMoveSpeed = 600.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float BaseAttackSpeed = 0.6f;
 };
 
 USTRUCT(BlueprintType)

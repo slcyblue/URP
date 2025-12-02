@@ -1,175 +1,128 @@
 #include "URPBuffDebuffComponent.h"
-#include "GameFramework/Actor.h"
+#include "Characters/Common/URPCharacterBase.h"
 
-// PercentValue: 20.0 => 0.2 (+20%)
-float UURPBuffDebuffComponent::PercentToRate(float PercentValue)
+UURPBuffDebuffComponent::UURPBuffDebuffComponent()
 {
-    return PercentValue * 0.01f;
+    PrimaryComponentTick.bCanEverTick = true;
 }
 
-// ================= Apply =================
+void UURPBuffDebuffComponent::BeginPlay()
+{
+    Super::BeginPlay();
+    OwnerCharacter = Cast<AURPCharacterBase>(GetOwner());
+}
+
+void UURPBuffDebuffComponent::TickComponent(
+    float DeltaTime,
+    ELevelTick TickType,
+    FActorComponentTickFunction* Func)
+{
+    Super::TickComponent(DeltaTime, TickType, Func);
+
+    // ---- BUFF ----
+    for (int32 i = ActiveBuffs.Num() - 1; i >= 0; --i)
+    {
+        ActiveBuffs[i].RemainingTime -= DeltaTime;
+        if (ActiveBuffs[i].RemainingTime <= 0.f)
+            ActiveBuffs.RemoveAt(i);
+    }
+
+    // ---- DEBUFF ----
+    for (int32 i = ActiveDebuffs.Num() - 1; i >= 0; --i)
+    {
+        ActiveDebuffs[i].RemainingTime -= DeltaTime;
+        if (ActiveDebuffs[i].RemainingTime <= 0.f)
+            ActiveDebuffs.RemoveAt(i);
+    }
+
+    // ---- DOT ----
+    for (int32 i = ActiveDOTs.Num() - 1; i >= 0; --i)
+    {
+        FURPActiveDOT& Dot = ActiveDOTs[i];
+
+        Dot.RemainingTime -= DeltaTime;
+        Dot.ElapsedForTick += DeltaTime;
+
+        while (Dot.ElapsedForTick >= Dot.TickInterval && Dot.RemainingTime > 0.f)
+        {
+            Dot.ElapsedForTick -= Dot.TickInterval;
+
+            if (OwnerCharacter)
+                OwnerCharacter->ApplyDamage(Dot.TickDamage);
+        }
+
+        if (Dot.RemainingTime <= 0.f)
+            ActiveDOTs.RemoveAt(i);
+    }
+}
+
+// =============================================================
+// Apply
+// =============================================================
 
 void UURPBuffDebuffComponent::ApplyBuff(EURPBuffType Type, float Value, float Duration)
 {
-    if (Type == EURPBuffType::None || Duration <= 0.f)
-        return;
-
-    // 같은 타입이면 갱신(가장 센 값 유지 + 시간 갱신)
-    for (FURPActiveBuff& B : ActiveBuffs)
-    {
-        if (B.Type == Type)
-        {
-            B.Value = FMath::Max(B.Value, Value);
-            B.RemainingTime = FMath::Max(B.RemainingTime, Duration);
-            return;
-        }
-    }
-
-    FURPActiveBuff NewBuff;
-    NewBuff.Type = Type;
-    NewBuff.Value = Value;
-    NewBuff.RemainingTime = Duration;
-    ActiveBuffs.Add(NewBuff);
+    ActiveBuffs.Add(FURPActiveBuff(Type, Value, Duration));
 }
 
 void UURPBuffDebuffComponent::ApplyDebuff(EURPDebuffType Type, float Value, float Duration)
 {
-    if (Type == EURPDebuffType::None || Duration <= 0.f)
-        return;
-
-    for (FURPActiveDebuff& D : ActiveDebuffs)
-    {
-        if (D.Type == Type)
-        {
-            D.Value = FMath::Max(D.Value, Value);
-            D.RemainingTime = FMath::Max(D.RemainingTime, Duration);
-            return;
-        }
-    }
-
-    FURPActiveDebuff NewDebuff;
-    NewDebuff.Type = Type;
-    NewDebuff.Value = Value;
-    NewDebuff.RemainingTime = Duration;
-    ActiveDebuffs.Add(NewDebuff);
+    ActiveDebuffs.Add(FURPActiveDebuff(Type, Value, Duration));
 }
 
 void UURPBuffDebuffComponent::ApplyDOT(float TickDamage, float TickInterval, float Duration)
 {
-    if (TickDamage <= 0.f || TickInterval <= 0.f || Duration <= 0.f)
-        return;
-
-    FURPActiveDOT NewDot;
-    NewDot.TickDamage = TickDamage;
-    NewDot.TickInterval = TickInterval;
-    NewDot.RemainingTime = Duration;
-    NewDot.ElapsedForTick = 0.f;
-
-    ActiveDOTs.Add(NewDot);
+    ActiveDOTs.Add(FURPActiveDOT(TickDamage, TickInterval, Duration));
 }
 
-// ================= Multiplier =================
+// =============================================================
+// Raw Buff Values (StatComponent에서 최종 계산에 사용)
+// =============================================================
 
-float UURPBuffDebuffComponent::GetAttackMultiplier() const
+float UURPBuffDebuffComponent::GetTotalBuffValue(EURPBuffType Type) const
 {
-    float AddRate = 0.f;
-
-    for (const FURPActiveBuff& B : ActiveBuffs)
-    {
-        if (B.Type == EURPBuffType::AttackUp)
-        {
-            AddRate += PercentToRate(B.Value);
-        }
-    }
-    for (const FURPActiveDebuff& D : ActiveDebuffs)
-    {
-        if (D.Type == EURPDebuffType::AttackDown)
-        {
-            AddRate -= PercentToRate(D.Value);
-        }
-    }
-
-    return FMath::Max(0.1f, 1.f + AddRate);
+    float Sum = 0.f;
+    for (auto& B : ActiveBuffs)
+        if (B.Type == Type)
+            Sum += B.Value;
+    return Sum;
 }
 
-float UURPBuffDebuffComponent::GetDefenseMultiplier() const
+float UURPBuffDebuffComponent::GetTotalDebuffValue(EURPDebuffType Type) const
 {
-    float AddRate = 0.f;
-
-    for (const FURPActiveBuff& B : ActiveBuffs)
-    {
-        if (B.Type == EURPBuffType::DefenseUp)
-        {
-            AddRate += PercentToRate(B.Value);
-        }
-    }
-    for (const FURPActiveDebuff& D : ActiveDebuffs)
-    {
-        if (D.Type == EURPDebuffType::DefenseDown)
-        {
-            AddRate -= PercentToRate(D.Value);
-        }
-    }
-
-    return FMath::Max(0.1f, 1.f + AddRate);
+    float Sum = 0.f;
+    for (auto& D : ActiveDebuffs)
+        if (D.Type == Type)
+            Sum += D.Value;
+    return Sum;
 }
 
-float UURPBuffDebuffComponent::GetMoveSpeedMultiplier() const
+float UURPBuffDebuffComponent::GetFlat(EURPBuffType Type) const
 {
-    float AddRate = 0.f;
-
-    for (const FURPActiveBuff& B : ActiveBuffs)
-    {
-        if (B.Type == EURPBuffType::MoveSpeedUp)
-        {
-            AddRate += PercentToRate(B.Value);
-        }
-    }
-    for (const FURPActiveDebuff& D : ActiveDebuffs)
-    {
-        if (D.Type == EURPDebuffType::MoveSpeedDown)
-        {
-            AddRate -= PercentToRate(D.Value);
-        }
-    }
-
-    return FMath::Max(0.1f, 1.f + AddRate);
+    return GetTotalBuffValue(Type);
 }
 
-float UURPBuffDebuffComponent::GetSkillHasteMultiplier() const
+float UURPBuffDebuffComponent::GetPercent(EURPBuffType Type) const
 {
-    float AddRate = 0.f;
-
-    for (const FURPActiveBuff& B : ActiveBuffs)
-    {
-        if (B.Type == EURPBuffType::SkillHaste)
-        {
-            AddRate += PercentToRate(B.Value);
-        }
-    }
-
-    // SkillHaste만 Buff로 가정 (쿨타임 감소)
-    return FMath::Max(0.f, 1.f - AddRate);
+    return PercentToRate(GetTotalBuffValue(Type));
 }
 
-// ================= 상태 쿼리 =================
+// =============================================================
+// States
+// =============================================================
 
 bool UURPBuffDebuffComponent::IsStunned() const
 {
-    for (const FURPActiveDebuff& D : ActiveDebuffs)
-    {
+    for (auto& D : ActiveDebuffs)
         if (D.Type == EURPDebuffType::Stun)
             return true;
-    }
     return false;
 }
 
 bool UURPBuffDebuffComponent::IsSilenced() const
 {
-    for (const FURPActiveDebuff& D : ActiveDebuffs)
-    {
+    for (auto& D : ActiveDebuffs)
         if (D.Type == EURPDebuffType::Silence)
             return true;
-    }
     return false;
 }
