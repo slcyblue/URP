@@ -8,16 +8,30 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "URPMonsterAIController.h"
 #include "Net/UnrealNetwork.h"
+#include <Characters/Player/URPPlayerCharacter.h>
 
 AURPMonsterCharacter::AURPMonsterCharacter()
 {
     bReplicates = true;
     bIsActive = false;
+
+    AggroSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AggroSphere"));
+    AggroSphere->SetupAttachment(RootComponent);
+
+    // 기본 충돌 설정 (Overlap으로 Pawn만 감지)
+    AggroSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    AggroSphere->SetCollisionObjectType(ECC_WorldDynamic);
+    AggroSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
+    AggroSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
 void AURPMonsterCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    AggroSphere->SetSphereRadius(AggroRadius);
+
+    AggroSphere->OnComponentBeginOverlap.AddDynamic(this, &AURPMonsterCharacter::OnAggroEnter);
 }
 
 void AURPMonsterCharacter::SetActive(bool bActive)
@@ -145,31 +159,32 @@ void AURPMonsterCharacter::ApplyStats(const FURPMonsterRow& Data, int32 Difficul
     float MaxHp = Data.MaxHp * FMath::Pow(1.2f, DifficultyLevel - 1);
     float AttackPower = Data.Attack * FMath::Pow(1.15f, DifficultyLevel - 1);
     StatComponent->SetBaseStats(MaxHp, AttackPower);
+
+    CurrentHp = StatComponent->GetFinalMaxHp();
 }
 
-void AURPMonsterCharacter::SetTargetFromBlackboard(AActor* NewTargetActor)
+void AURPMonsterCharacter::SetTarget(AActor* NewTargetActor)
 {
     if (!HasAuthority()) return;
 
-    AURPCharacterBase* NewTarget = Cast<AURPCharacterBase>(NewTargetActor);
-
-    if (!IsValid(NewTarget) || NewTarget == this || NewTarget->bIsDead)
-    {
-        ClearTarget();
-        return;
-    }
-
-    if (CurrentTarget == NewTarget)
+    // 이미 타겟 있음 → 타겟 변경 금지
+    if (CurrentTarget && CurrentTarget != NewTargetActor)
         return;
 
-    if (IsValid(CurrentTarget))
-    {
-        CurrentTarget->OnCharacterDied.RemoveDynamic(this, &AURPMonsterCharacter::OnTargetDied);
-    }
+    // 이미 설정된 경우는 통과
+    if (CurrentTarget == NewTargetActor)
+        return;
 
-    CurrentTarget = NewTarget;
+    CurrentTarget = Cast<AURPCharacterBase>(NewTargetActor);
 
-    CurrentTarget->OnCharacterDied.AddDynamic(this, &AURPMonsterCharacter::OnTargetDied);
+    // 죽음 감지 등록
+    if (CurrentTarget)
+        CurrentTarget->OnCharacterDied.AddDynamic(this, &AURPMonsterCharacter::OnTargetDied);
+
+    // 블랙보드 반영
+    if (auto* AI = Cast<AURPMonsterAIController>(GetController()))
+        if (auto* BB = AI->GetBlackboardComponent())
+            BB->SetValueAsObject("TargetActor", NewTargetActor);
 }
 
 void AURPMonsterCharacter::OnTargetDied(AURPCharacterBase* Dead)
@@ -178,14 +193,6 @@ void AURPMonsterCharacter::OnTargetDied(AURPCharacterBase* Dead)
     if (Dead != CurrentTarget) return;
 
     ClearTarget();
-
-    if (AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(GetController()))
-    {
-        if (UBlackboardComponent* BB = AI->GetBlackboardComponent())
-        {
-            BB->SetValueAsEnum("AIState", (uint8)EAIState::Return);
-        }
-    }
 }
 
 void AURPMonsterCharacter::ClearTarget()
@@ -198,7 +205,49 @@ void AURPMonsterCharacter::ClearTarget()
     }
 
     CurrentTarget = nullptr;
+
+    if (AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(GetController()))
+    {
+        if (UBlackboardComponent* BB = AI->GetBlackboardComponent())
+        {
+            BB->SetValueAsObject("TargetActor", nullptr);
+        }
+    }
 }
+
+void AURPMonsterCharacter::OnAggroEnter(UPrimitiveComponent*, AActor* OtherActor,
+    UPrimitiveComponent*, int32, bool, const FHitResult&)
+{
+    if (!HasAuthority()) return;
+
+
+    auto* Player = Cast<AURPPlayerCharacter>(OtherActor);
+    if (!Player) return;
+
+    // 이미 타겟 있음 → 새로운 타겟으로 바꾸지 않음
+    if (CurrentTarget)
+        return;
+
+    // 현재 AIState 확인 (Idle/Patrol일 때만 타겟 획득)
+    if (auto* AI = Cast<AURPMonsterAIController>(GetController()))
+    {
+        if (auto* BB = AI->GetBlackboardComponent())
+        {
+            uint8 State = BB->GetValueAsEnum("AIState");
+
+            if (State != (uint8)EAIState::Idle &&
+                State != (uint8)EAIState::Patrol)
+            {
+                // Chase/Attack/Return 중에는 새 타겟 획득 불가
+                return;
+            }
+        }
+    }
+
+    // 여기까지 통과한 경우에만 타겟 획득
+    SetTarget(Player);
+}
+
 
 void AURPMonsterCharacter::PerformBasicAttack(AActor* TargetActor)
 {
@@ -215,10 +264,11 @@ void AURPMonsterCharacter::Die()
 
     if (AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(GetController()))
     {
+        if (auto* BB = AI->GetBlackboardComponent())
+            BB->SetValueAsEnum("AIState", (uint8)EAIState::Dead);
+
         if (AI->BrainComponent)
-        {
             AI->BrainComponent->StopLogic("Dead");
-        }
     }
 
     SetActorHiddenInGame(true);

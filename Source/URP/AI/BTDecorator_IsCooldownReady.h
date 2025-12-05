@@ -17,9 +17,6 @@ class URP_API UBTDecorator_IsCooldownReady : public UBTDecorator
     GENERATED_BODY()
 
 protected:
-    virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8*) const override
-    {
-        auto* BB = OwnerComp.GetBlackboardComponent();
-        return BB->GetValueAsFloat("AttackCooldown") <= 0.f;
-    }
+    virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8*) const override;
+
 };

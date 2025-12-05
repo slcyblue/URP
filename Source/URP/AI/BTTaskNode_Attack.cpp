@@ -2,6 +2,7 @@
 
 
 #include "AI/BTTaskNode_Attack.h"
+#include "Characters/Monster/URPMonsterAIController.h"
 
 UBTTaskNode_Attack::UBTTaskNode_Attack()
 {
@@ -10,23 +11,30 @@ UBTTaskNode_Attack::UBTTaskNode_Attack()
 
 EBTNodeResult::Type UBTTaskNode_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8*)
 {
-    AAIController* AI = OwnerComp.GetAIOwner();
-    if (!AI || !AI->HasAuthority()) return EBTNodeResult::Failed;
+    AURPMonsterAIController* AI = Cast<AURPMonsterAIController>(OwnerComp.GetAIOwner());
+    if (!AI) return EBTNodeResult::Failed;
 
-    auto* BB = OwnerComp.GetBlackboardComponent();
-    auto* Monster = Cast<AURPMonsterCharacter>(AI->GetPawn());
+    AURPMonsterCharacter* Monster = Cast<AURPMonsterCharacter>(AI->GetPawn());
+    if (!Monster) return EBTNodeResult::Failed;
+
+    UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
+    if (!BB) return EBTNodeResult::Failed;
+
     AActor* Target = Cast<AActor>(BB->GetValueAsObject("TargetActor"));
+    if (!Target) return EBTNodeResult::Failed;
 
-    if (!Monster || !Target) return EBTNodeResult::Failed;
-
-    // 공격 애니메이션 실행
-    //Monster->PlayAttackMontage();
-
-    // 데미지 주기
+    // ====== 실제 공격 ======
     Monster->PerformBasicAttack(Target);
 
-    // 쿨다운 초기화
-    BB->SetValueAsFloat("AttackCooldown", AttackCooldownTime);
+    // ====== AttackSpeed 기반 다음 공격 시간 설정 ======
+    float ASPD = Monster->StatComponent->GetFinalAttackSpeed();
+    float Interval = 1.f / FMath::Max(ASPD, 0.1f);
+
+    float Now = OwnerComp.GetWorld()->GetTimeSeconds();
+    BB->SetValueAsFloat("NextAttackTime", Now + Interval);
+
+    // 상태 유지
+    BB->SetValueAsEnum("AIState", (uint8)EAIState::Attack);
 
     return EBTNodeResult::Succeeded;
 }

@@ -85,6 +85,7 @@ void AURPPlayerCharacter::InitializeFromPlayerData()
     );
     StatComponent->Recalculate();
 
+    CurrentHp = StatComponent->GetFinalMaxHp();
     UE_LOG(LogTemp, Log, TEXT("Player initialized from PlayerData"));
 }
 

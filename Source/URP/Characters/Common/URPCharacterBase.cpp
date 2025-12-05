@@ -28,11 +28,6 @@ void AURPCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-    if (StatComponent) 
-    {
-        CurrentHp = StatComponent->GetFinalMaxHp();
-    }
-
     AnimInstance = Cast<UURPAnimInstance>(GetMesh()->GetAnimInstance());
 }
 

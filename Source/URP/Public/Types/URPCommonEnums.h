@@ -74,6 +74,7 @@ UENUM(BlueprintType)
 enum class EURPBuffType : uint8
 {
     None,
+    MaxHPUp,
     AttackUp,
     DefenseUp,
     MoveSpeedUp,
@@ -86,6 +87,7 @@ UENUM(BlueprintType)
 enum class EURPDebuffType : uint8
 {
     None,
+    MaxHPDown,
     AttackDown,
     DefenseDown,
     MoveSpeedDown,

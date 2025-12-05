@@ -104,4 +104,18 @@ void UURPStatComponent::Recalculate()
         * (1.f + BuffASPercent - DebuffASPercent);
 
     FinalAttackSpeed = FMath::Clamp(FinalAttackSpeed, 0.1f, 5.f);
+
+    // 5) MaxHP
+
+    float BuffHPFlat = BuffComp->GetFlat(EURPBuffType::MaxHPUp);
+    float BuffHPPercent = BuffComp->GetPercent(EURPBuffType::MaxHPUp);
+
+    float DebuffHPFlat = BuffComp->GetTotalDebuffValue(EURPDebuffType::MaxHPDown);
+    float DebuffHPPercent = BuffComp->GetTotalDebuffValue(EURPDebuffType::MaxHPDown) * 0.01f;
+
+    FinalMaxHp =
+        (BaseMaxHp + EquipMaxHp + BuffHPFlat - DebuffHPFlat)
+        * (1.f + BuffHPPercent - DebuffHPPercent);
+
+    FinalMaxHp = FMath::Max(FinalAttackSpeed, 100.f);
 }
